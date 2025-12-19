@@ -1,26 +1,24 @@
-import { Plus, Eye } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { Product } from '@/types/product';
 import { useCart } from '@/contexts/CartContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { useState } from 'react';
 
 interface ProductCardProps {
   product: Product;
   index?: number;
 }
 
-const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
+const ProductCard = ({ product }: ProductCardProps) => {
   const { addToCart } = useCart();
-  const [isHovered, setIsHovered] = useState(false);
 
   const handleAddToCart = () => {
     addToCart(product);
     toast.success(`${product.name} ajouté au panier`);
   };
 
-  const categoryLabels = {
+  const categoryLabels: Record<string, string> = {
     homme: 'Homme',
     femme: 'Femme',
     unisex: 'Unisex',
@@ -28,81 +26,34 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
   };
 
   return (
-    <div 
-      className="group relative bg-card rounded-xl overflow-hidden border border-border/50 hover:border-primary/50 transition-all duration-700 hover:shadow-2xl hover:shadow-primary/10 perspective-1000"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      style={{
-        transform: isHovered ? 'translateY(-8px) scale(1.02)' : 'translateY(0) scale(1)',
-        transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)'
-      }}
-    >
+    <div className="group relative bg-card rounded-xl overflow-hidden border border-border/50 hover:border-primary/50 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-2 hover:scale-[1.02]">
       {/* Image Container */}
       <div className="relative aspect-[4/5] overflow-hidden">
-        {/* Shine effect on hover */}
-        <div 
-          className="absolute inset-0 z-10 pointer-events-none"
-          style={{
-            background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.2) 50%, transparent 100%)',
-            transform: isHovered ? 'translateX(200%)' : 'translateX(-100%)',
-            transition: 'transform 0.8s ease-in-out'
-          }}
-        />
+        {/* Shine effect overlay */}
+        <div className="absolute inset-0 z-10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
         
         <img
           src={product.image}
           alt={product.name}
-          className="w-full h-full object-cover transition-all duration-1000 ease-out"
-          style={{
-            transform: isHovered ? 'scale(1.15) rotate(2deg)' : 'scale(1) rotate(0deg)',
-          }}
+          className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
         />
         
-        {/* Gradient overlay with dynamic opacity */}
-        <div 
-          className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent transition-opacity duration-500"
-          style={{ opacity: isHovered ? 1 : 0.3 }}
-        />
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent opacity-60 group-hover:opacity-100 transition-opacity duration-300" />
         
-        {/* Category Badge with animation */}
+        {/* Category Badge */}
         <Badge 
           variant="secondary" 
-          className="absolute top-4 left-4 bg-background/90 backdrop-blur-md transition-all duration-300 border border-primary/20"
-          style={{
-            transform: isHovered ? 'translateY(0) scale(1.05)' : 'translateY(0) scale(1)',
-          }}
+          className="absolute top-4 left-4 bg-background/90 backdrop-blur-md border border-primary/20 transition-transform duration-300 group-hover:scale-105"
         >
           {categoryLabels[product.category]}
         </Badge>
 
-        {/* Floating action buttons */}
-        <div 
-          className="absolute top-4 right-4 flex flex-col gap-2 transition-all duration-500"
-          style={{
-            opacity: isHovered ? 1 : 0,
-            transform: isHovered ? 'translateX(0)' : 'translateX(10px)',
-          }}
-        >
-          <Button
-            size="icon"
-            variant="secondary"
-            className="h-10 w-10 rounded-full bg-background/90 backdrop-blur-md hover:bg-primary hover:text-primary-foreground shadow-lg"
-          >
-            <Eye className="h-4 w-4" />
-          </Button>
-        </div>
-
         {/* Quick Add Button */}
-        <div 
-          className="absolute bottom-4 left-4 right-4 transition-all duration-500"
-          style={{
-            opacity: isHovered ? 1 : 0,
-            transform: isHovered ? 'translateY(0)' : 'translateY(20px)',
-          }}
-        >
+        <div className="absolute bottom-4 left-4 right-4 opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
           <Button
             onClick={handleAddToCart}
-            className="w-full gradient-gold shadow-xl hover:shadow-primary/30 transition-all duration-300"
+            className="w-full gradient-gold shadow-xl"
           >
             <Plus className="h-4 w-4 mr-2" />
             Ajouter au panier
@@ -110,49 +61,30 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
         </div>
       </div>
 
-      {/* Content with slide-up animation */}
-      <div 
-        className="p-5 transition-all duration-500"
-        style={{
-          transform: isHovered ? 'translateY(-4px)' : 'translateY(0)',
-        }}
-      >
-        <h3 
-          className="font-display text-lg font-semibold mb-2 transition-all duration-300"
-          style={{
-            color: isHovered ? 'hsl(var(--primary))' : 'hsl(var(--foreground))',
-          }}
-        >
+      {/* Content */}
+      <div className="p-5 transition-transform duration-300 group-hover:-translate-y-1">
+        <h3 className="font-display text-lg font-semibold mb-2 transition-colors duration-300 group-hover:text-primary">
           {product.name}
         </h3>
         <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
           {product.description}
         </p>
         
-        {/* Notes with staggered animation */}
+        {/* Notes */}
         <div className="flex flex-wrap gap-1.5 mb-4">
-          {product.notes.map((note, noteIndex) => (
+          {product.notes.map((note, i) => (
             <span 
               key={note} 
               className="text-xs px-2 py-1 bg-muted/80 rounded-full text-muted-foreground transition-all duration-300 hover:bg-primary/20 hover:text-primary"
-              style={{
-                transitionDelay: isHovered ? `${noteIndex * 50}ms` : '0ms',
-                transform: isHovered ? 'scale(1.05)' : 'scale(1)',
-              }}
+              style={{ transitionDelay: `${i * 30}ms` }}
             >
               {note}
             </span>
           ))}
         </div>
 
-        {/* Price with emphasis animation */}
-        <div 
-          className="flex items-baseline gap-1 transition-all duration-300"
-          style={{
-            transform: isHovered ? 'scale(1.05)' : 'scale(1)',
-            transformOrigin: 'left bottom',
-          }}
-        >
+        {/* Price */}
+        <div className="flex items-baseline gap-1 transition-transform duration-300 group-hover:scale-105 origin-left">
           <span className="font-display text-2xl font-bold text-primary">
             {product.price}
           </span>
@@ -161,12 +93,7 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
       </div>
 
       {/* Bottom accent line */}
-      <div 
-        className="absolute bottom-0 left-0 h-1 bg-gradient-to-r from-primary via-gold to-primary transition-all duration-500"
-        style={{
-          width: isHovered ? '100%' : '0%',
-        }}
-      />
+      <div className="absolute bottom-0 left-0 h-1 bg-gradient-to-r from-primary via-gold to-primary w-0 group-hover:w-full transition-all duration-500" />
     </div>
   );
 };
