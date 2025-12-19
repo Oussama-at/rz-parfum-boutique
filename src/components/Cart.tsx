@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Minus, Plus, Trash2, MessageCircle, Truck } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { DELIVERY_FEE, FREE_DELIVERY_THRESHOLD, WHATSAPP_NUMBER } from '@/data/products';
@@ -8,21 +8,66 @@ import { Separator } from '@/components/ui/separator';
 import { Progress } from '@/components/ui/progress';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+
+const MOROCCAN_CITIES = [
+  'Casablanca', 'Rabat', 'Marrakech', 'Fès', 'Tanger', 'Agadir', 'Meknès', 
+  'Oujda', 'Kenitra', 'Tétouan', 'Safi', 'Mohammedia', 'El Jadida', 'Béni Mellal',
+  'Nador', 'Taza', 'Settat', 'Berrechid', 'Khémisset', 'Khouribga', 'Larache',
+  'Guelmim', 'Ksar El Kébir', 'Ouarzazate', 'Errachidia', 'Essaouira', 'Al Hoceima',
+  'Taourirt', 'Berkane', 'Sidi Slimane', 'Sidi Kacem', 'Azrou', 'Ifrane'
+].sort();
+
+const STORAGE_KEY = 'rz-parfum-delivery-info';
+
+interface DeliveryInfo {
+  name: string;
+  phone: string;
+  city: string;
+  address: string;
+}
 
 const Cart = () => {
   const { items, updateQuantity, removeFromCart, getSubtotal, getTotal, clearCart } = useCart();
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<DeliveryInfo>({
     name: '',
+    phone: '',
     city: '',
     address: ''
   });
+
+  // Load saved delivery info on mount
+  useEffect(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        setFormData(parsed);
+      } catch (e) {
+        console.error('Failed to load saved delivery info');
+      }
+    }
+  }, []);
+
+  // Save delivery info when it changes
+  useEffect(() => {
+    if (formData.name || formData.phone || formData.city || formData.address) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
+    }
+  }, [formData]);
 
   const subtotal = getSubtotal();
   const isFreeDelivery = subtotal >= FREE_DELIVERY_THRESHOLD;
   const amountToFreeDelivery = FREE_DELIVERY_THRESHOLD - subtotal;
   const progressPercent = Math.min((subtotal / FREE_DELIVERY_THRESHOLD) * 100, 100);
 
-  const isFormValid = formData.name.trim() && formData.city.trim() && formData.address.trim();
+  const isFormValid = formData.name.trim() && formData.phone.trim() && formData.city && formData.address.trim();
 
   const handleWhatsAppOrder = () => {
     if (!isFormValid) return;
@@ -32,7 +77,7 @@ const Cart = () => {
       .join('\n');
     
     const deliveryText = isFreeDelivery ? 'GRATUITE 🎉' : `${DELIVERY_FEE} DH`;
-    const message = `🌹 *Nouvelle Commande R Z Parfum*\n\n📋 *Informations de livraison:*\n👤 Nom: ${formData.name.trim()}\n🏙️ Ville: ${formData.city.trim()}\n📍 Adresse: ${formData.address.trim()}\n\n🛒 *Articles:*\n${orderDetails}\n\n📦 Sous-total: ${subtotal} DH\n🚚 Livraison: ${deliveryText}\n💰 *Total: ${getTotal()} DH*`;
+    const message = `🌹 *Nouvelle Commande R Z Parfum*\n\n📋 *Informations de livraison:*\n👤 Nom: ${formData.name.trim()}\n📞 Tél: ${formData.phone.trim()}\n🏙️ Ville: ${formData.city}\n📍 Adresse: ${formData.address.trim()}\n\n🛒 *Articles:*\n${orderDetails}\n\n📦 Sous-total: ${subtotal} DH\n🚚 Livraison: ${deliveryText}\n💰 *Total: ${getTotal()} DH*`;
     
     const encodedMessage = encodeURIComponent(message);
     const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER.replace('+', '')}?text=${encodedMessage}`;
@@ -149,14 +194,33 @@ const Cart = () => {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="city" className="text-xs">Ville *</Label>
+            <Label htmlFor="phone" className="text-xs">Téléphone *</Label>
             <Input
-              id="city"
-              placeholder="Votre ville"
-              value={formData.city}
-              onChange={(e) => setFormData(prev => ({ ...prev, city: e.target.value }))}
+              id="phone"
+              type="tel"
+              placeholder="06 XX XX XX XX"
+              value={formData.phone}
+              onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
               className="h-9"
             />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="city" className="text-xs">Ville *</Label>
+            <Select
+              value={formData.city}
+              onValueChange={(value) => setFormData(prev => ({ ...prev, city: value }))}
+            >
+              <SelectTrigger className="h-9">
+                <SelectValue placeholder="Sélectionnez votre ville" />
+              </SelectTrigger>
+              <SelectContent className="bg-background border border-border z-50 max-h-60">
+                {MOROCCAN_CITIES.map(city => (
+                  <SelectItem key={city} value={city}>
+                    {city}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="space-y-2">
             <Label htmlFor="address" className="text-xs">Adresse complète *</Label>
