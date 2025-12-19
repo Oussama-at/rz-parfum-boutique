@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Minus, Plus, Trash2, MessageCircle, Truck } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { DELIVERY_FEE, FREE_DELIVERY_THRESHOLD, WHATSAPP_NUMBER } from '@/data/products';
@@ -5,22 +6,33 @@ import { Button } from '@/components/ui/button';
 import { SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
 import { Progress } from '@/components/ui/progress';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 const Cart = () => {
   const { items, updateQuantity, removeFromCart, getSubtotal, getTotal, clearCart } = useCart();
+  const [formData, setFormData] = useState({
+    name: '',
+    city: '',
+    address: ''
+  });
 
   const subtotal = getSubtotal();
   const isFreeDelivery = subtotal >= FREE_DELIVERY_THRESHOLD;
   const amountToFreeDelivery = FREE_DELIVERY_THRESHOLD - subtotal;
   const progressPercent = Math.min((subtotal / FREE_DELIVERY_THRESHOLD) * 100, 100);
 
+  const isFormValid = formData.name.trim() && formData.city.trim() && formData.address.trim();
+
   const handleWhatsAppOrder = () => {
+    if (!isFormValid) return;
+
     const orderDetails = items
       .map(item => `• ${item.name} x${item.quantity} = ${item.price * item.quantity} DH`)
       .join('\n');
     
     const deliveryText = isFreeDelivery ? 'GRATUITE 🎉' : `${DELIVERY_FEE} DH`;
-    const message = `🌹 *Nouvelle Commande R Z Parfum*\n\n${orderDetails}\n\n📦 Sous-total: ${subtotal} DH\n🚚 Livraison: ${deliveryText}\n💰 *Total: ${getTotal()} DH*\n\n✨ Je souhaite passer cette commande.`;
+    const message = `🌹 *Nouvelle Commande R Z Parfum*\n\n📋 *Informations de livraison:*\n👤 Nom: ${formData.name.trim()}\n🏙️ Ville: ${formData.city.trim()}\n📍 Adresse: ${formData.address.trim()}\n\n🛒 *Articles:*\n${orderDetails}\n\n📦 Sous-total: ${subtotal} DH\n🚚 Livraison: ${deliveryText}\n💰 *Total: ${getTotal()} DH*`;
     
     const encodedMessage = encodeURIComponent(message);
     const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER.replace('+', '')}?text=${encodedMessage}`;
@@ -75,7 +87,7 @@ const Cart = () => {
       </div>
 
       {/* Items */}
-      <div className="flex-1 overflow-auto py-6 space-y-4">
+      <div className="flex-1 overflow-auto py-4 space-y-4">
         {items.map(item => (
           <div key={item.id} className="flex gap-4 p-3 bg-muted/50 rounded-lg">
             <img
@@ -119,6 +131,44 @@ const Cart = () => {
             </div>
           </div>
         ))}
+
+        {/* Delivery Form */}
+        <div className="p-4 bg-muted/30 rounded-lg border border-border/50 space-y-3">
+          <h4 className="font-medium text-sm flex items-center gap-2">
+            <Truck className="h-4 w-4" />
+            Informations de livraison
+          </h4>
+          <div className="space-y-2">
+            <Label htmlFor="name" className="text-xs">Nom complet *</Label>
+            <Input
+              id="name"
+              placeholder="Votre nom"
+              value={formData.name}
+              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+              className="h-9"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="city" className="text-xs">Ville *</Label>
+            <Input
+              id="city"
+              placeholder="Votre ville"
+              value={formData.city}
+              onChange={(e) => setFormData(prev => ({ ...prev, city: e.target.value }))}
+              className="h-9"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="address" className="text-xs">Adresse complète *</Label>
+            <Input
+              id="address"
+              placeholder="Rue, numéro, quartier..."
+              value={formData.address}
+              onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
+              className="h-9"
+            />
+          </div>
+        </div>
       </div>
 
       {/* Summary */}
@@ -144,10 +194,16 @@ const Cart = () => {
         <Button
           className="w-full mt-4 gradient-gold text-primary-foreground py-6 text-base"
           onClick={handleWhatsAppOrder}
+          disabled={!isFormValid}
         >
           <MessageCircle className="h-5 w-5 mr-2" />
           Commander via WhatsApp
         </Button>
+        {!isFormValid && items.length > 0 && (
+          <p className="text-xs text-center text-muted-foreground">
+            Remplissez vos informations de livraison pour commander
+          </p>
+        )}
 
         <Button
           variant="ghost"
