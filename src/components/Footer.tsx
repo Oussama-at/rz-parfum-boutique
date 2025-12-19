@@ -9,7 +9,7 @@ const Footer = () => {
           {/* Brand */}
           <div className="md:col-span-2">
             <div className="flex flex-col mb-6">
-              <span className="font-display text-3xl font-bold text-gradient">R Z</span>
+              <span className="font-display text-3xl font-bold text-gradient">R&Z</span>
               <span className="text-xs tracking-[0.3em] text-muted-foreground uppercase">
                 Parfum
               </span>
@@ -76,7 +76,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-border/20 mt-12 pt-8 text-center text-sm text-muted-foreground">
-          <p>© 2024 R Z Parfum. Tous droits réservés.</p>
+          <p>© 2024 R&Z Parfum. Tous droits réservés.</p>
         </div>
       </div>
     </footer>

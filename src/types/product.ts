@@ -4,7 +4,7 @@ export interface Product {
   description: string;
   price: number;
   image: string;
-  category: 'homme' | 'femme' | 'unisex';
+  category: 'homme' | 'femme' | 'unisex' | 'pack';
   notes: string[];
 }
 
