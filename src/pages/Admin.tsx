@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { ArrowLeft, Package, Clock, CheckCircle, XCircle, Truck, Phone, MapPin, User } from 'lucide-react';
+import { ArrowLeft, Package, Clock, CheckCircle, Truck, Phone, MapPin, User, LogOut, ShieldAlert } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 
@@ -48,6 +50,14 @@ const Admin = () => {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>('all');
   const { toast } = useToast();
+  const { user, isAdmin, loading: authLoading, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate('/auth');
+    }
+  }, [authLoading, user, navigate]);
 
   const fetchOrders = async () => {
     setLoading(true);
@@ -63,7 +73,6 @@ const Admin = () => {
         variant: 'destructive',
       });
     } else {
-      // Cast items from Json to OrderItem[]
       const ordersWithTypedItems = (data || []).map((order) => ({
         ...order,
         items: order.items as unknown as OrderItem[],
@@ -74,24 +83,25 @@ const Admin = () => {
   };
 
   useEffect(() => {
-    fetchOrders();
+    if (user && isAdmin) {
+      fetchOrders();
 
-    // Subscribe to real-time updates
-    const channel = supabase
-      .channel('orders-changes')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'orders' },
-        () => {
-          fetchOrders();
-        }
-      )
-      .subscribe();
+      const channel = supabase
+        .channel('orders-changes')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'orders' },
+          () => {
+            fetchOrders();
+          }
+        )
+        .subscribe();
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    }
+  }, [user, isAdmin]);
 
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
     const { error } = await supabase
@@ -123,6 +133,11 @@ const Admin = () => {
     );
   };
 
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/auth');
+  };
+
   const filteredOrders = filter === 'all' 
     ? orders 
     : orders.filter((o) => o.status === filter);
@@ -134,10 +149,38 @@ const Admin = () => {
     delivered: orders.filter((o) => o.status === 'delivered').length,
   };
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Card className="w-full max-w-md">
+          <CardContent className="pt-6 text-center">
+            <ShieldAlert className="h-16 w-16 mx-auto text-destructive mb-4" />
+            <h2 className="text-xl font-bold mb-2">Accès refusé</h2>
+            <p className="text-muted-foreground mb-4">
+              Vous n'avez pas les droits d'administrateur pour accéder à cette page.
+            </p>
+            <div className="flex gap-2 justify-center">
+              <Link to="/">
+                <Button variant="outline">Retour à l'accueil</Button>
+              </Link>
+              <Button variant="destructive" onClick={handleSignOut}>
+                Se déconnecter
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -155,9 +198,15 @@ const Admin = () => {
               </Link>
               <h1 className="text-2xl font-display font-bold">Tableau de Bord Admin</h1>
             </div>
-            <Button onClick={fetchOrders} variant="outline">
-              Actualiser
-            </Button>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground hidden sm:block">{user.email}</span>
+              <Button onClick={fetchOrders} variant="outline" size="sm">
+                Actualiser
+              </Button>
+              <Button onClick={handleSignOut} variant="ghost" size="icon">
+                <LogOut className="h-5 w-5" />
+              </Button>
+            </div>
           </div>
         </div>
       </header>
