@@ -1,19 +1,26 @@
-import { Minus, Plus, Trash2, MessageCircle } from 'lucide-react';
+import { Minus, Plus, Trash2, MessageCircle, Truck } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
-import { DELIVERY_FEE, WHATSAPP_NUMBER } from '@/data/products';
+import { DELIVERY_FEE, FREE_DELIVERY_THRESHOLD, WHATSAPP_NUMBER } from '@/data/products';
 import { Button } from '@/components/ui/button';
 import { SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
+import { Progress } from '@/components/ui/progress';
 
 const Cart = () => {
   const { items, updateQuantity, removeFromCart, getSubtotal, getTotal, clearCart } = useCart();
+
+  const subtotal = getSubtotal();
+  const isFreeDelivery = subtotal >= FREE_DELIVERY_THRESHOLD;
+  const amountToFreeDelivery = FREE_DELIVERY_THRESHOLD - subtotal;
+  const progressPercent = Math.min((subtotal / FREE_DELIVERY_THRESHOLD) * 100, 100);
 
   const handleWhatsAppOrder = () => {
     const orderDetails = items
       .map(item => `• ${item.name} x${item.quantity} = ${item.price * item.quantity} DH`)
       .join('\n');
     
-    const message = `🌹 *Nouvelle Commande R Z Parfum*\n\n${orderDetails}\n\n📦 Sous-total: ${getSubtotal()} DH\n🚚 Livraison: ${DELIVERY_FEE} DH\n💰 *Total: ${getTotal()} DH*\n\n✨ Je souhaite passer cette commande.`;
+    const deliveryText = isFreeDelivery ? 'GRATUITE 🎉' : `${DELIVERY_FEE} DH`;
+    const message = `🌹 *Nouvelle Commande R Z Parfum*\n\n${orderDetails}\n\n📦 Sous-total: ${subtotal} DH\n🚚 Livraison: ${deliveryText}\n💰 *Total: ${getTotal()} DH*\n\n✨ Je souhaite passer cette commande.`;
     
     const encodedMessage = encodeURIComponent(message);
     const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER.replace('+', '')}?text=${encodedMessage}`;
@@ -50,6 +57,23 @@ const Cart = () => {
         </SheetTitle>
       </SheetHeader>
 
+      {/* Free Delivery Progress */}
+      <div className="mt-4 p-3 bg-muted/50 rounded-lg">
+        <div className="flex items-center gap-2 mb-2">
+          <Truck className="h-4 w-4 text-primary" />
+          {isFreeDelivery ? (
+            <span className="text-sm font-medium text-green-600">
+              🎉 Livraison GRATUITE !
+            </span>
+          ) : (
+            <span className="text-sm text-muted-foreground">
+              Plus que <span className="font-semibold text-primary">{amountToFreeDelivery} DH</span> pour la livraison gratuite
+            </span>
+          )}
+        </div>
+        <Progress value={progressPercent} className="h-2" />
+      </div>
+
       {/* Items */}
       <div className="flex-1 overflow-auto py-6 space-y-4">
         {items.map(item => (
@@ -57,7 +81,7 @@ const Cart = () => {
             <img
               src={item.image}
               alt={item.name}
-              className="w-20 h-24 object-cover rounded-md"
+              className="w-20 h-24 object-contain rounded-md bg-muted/30"
             />
             <div className="flex-1 min-w-0">
               <h4 className="font-medium text-sm truncate">{item.name}</h4>
@@ -101,11 +125,15 @@ const Cart = () => {
       <div className="border-t border-border pt-4 space-y-3">
         <div className="flex justify-between text-sm">
           <span className="text-muted-foreground">Sous-total</span>
-          <span>{getSubtotal()} DH</span>
+          <span>{subtotal} DH</span>
         </div>
         <div className="flex justify-between text-sm">
           <span className="text-muted-foreground">Livraison</span>
-          <span>{DELIVERY_FEE} DH</span>
+          {isFreeDelivery ? (
+            <span className="text-green-600 font-medium">GRATUITE</span>
+          ) : (
+            <span>{DELIVERY_FEE} DH</span>
+          )}
         </div>
         <Separator />
         <div className="flex justify-between font-semibold text-lg">
