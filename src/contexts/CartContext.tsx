@@ -1,28 +1,16 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { useContext, useState, ReactNode } from 'react';
 import { CartItem, Product } from '@/types/product';
 import { DELIVERY_FEE, FREE_DELIVERY_THRESHOLD } from '@/data/products';
-
-interface CartContextType {
-  items: CartItem[];
-  addToCart: (product: Product) => void;
-  removeFromCart: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
-  clearCart: () => void;
-  getSubtotal: () => number;
-  getTotal: () => number;
-  itemCount: number;
-}
-
-const CartContext = createContext<CartContextType | undefined>(undefined);
+import { CartContext, CartContextType } from './cart-context';
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [items, setItems] = useState<CartItem[]>([]);
 
   const addToCart = (product: Product) => {
-    setItems(current => {
-      const existing = current.find(item => item.id === product.id);
+    setItems((current) => {
+      const existing = current.find((item) => item.id === product.id);
       if (existing) {
-        return current.map(item =>
+        return current.map((item) =>
           item.id === product.id
             ? { ...item, quantity: item.quantity + 1 }
             : item
@@ -33,7 +21,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const removeFromCart = (productId: string) => {
-    setItems(current => current.filter(item => item.id !== productId));
+    setItems((current) => current.filter((item) => item.id !== productId));
   };
 
   const updateQuantity = (productId: string, quantity: number) => {
@@ -41,10 +29,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       removeFromCart(productId);
       return;
     }
-    setItems(current =>
-      current.map(item =>
-        item.id === productId ? { ...item, quantity } : item
-      )
+    setItems((current) =>
+      current.map((item) => (item.id === productId ? { ...item, quantity } : item))
     );
   };
 
@@ -61,22 +47,18 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
-  return (
-    <CartContext.Provider
-      value={{
-        items,
-        addToCart,
-        removeFromCart,
-        updateQuantity,
-        clearCart,
-        getSubtotal,
-        getTotal,
-        itemCount,
-      }}
-    >
-      {children}
-    </CartContext.Provider>
-  );
+  const value: CartContextType = {
+    items,
+    addToCart,
+    removeFromCart,
+    updateQuantity,
+    clearCart,
+    getSubtotal,
+    getTotal,
+    itemCount,
+  };
+
+  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };
 
 export const useCart = (): CartContextType => {
