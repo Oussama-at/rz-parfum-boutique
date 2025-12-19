@@ -12,7 +12,7 @@ const Header = () => {
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <a href="/" className="flex flex-col items-center">
           <span className="font-display text-2xl md:text-3xl font-bold text-gradient">
-            R Z
+            R&Z
           </span>
           <span className="text-xs tracking-[0.3em] text-muted-foreground uppercase">
             Parfum

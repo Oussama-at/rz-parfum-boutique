@@ -4,7 +4,7 @@ import ProductCard from './ProductCard';
 import { Button } from '@/components/ui/button';
 
 const ProductGrid = () => {
-  const [filter, setFilter] = useState<'all' | 'homme' | 'femme' | 'unisex'>('all');
+  const [filter, setFilter] = useState<'all' | 'homme' | 'femme' | 'unisex' | 'pack'>('all');
 
   const filteredProducts = filter === 'all' 
     ? products 
@@ -31,7 +31,8 @@ const ProductGrid = () => {
             { value: 'all', label: 'Tous' },
             { value: 'homme', label: 'Homme' },
             { value: 'femme', label: 'Femme' },
-            { value: 'unisex', label: 'Unisex' }
+            { value: 'unisex', label: 'Unisex' },
+            { value: 'pack', label: 'Pack' }
           ].map(({ value, label }) => (
             <Button
               key={value}
