@@ -28,18 +28,18 @@ const ProductCard = ({ product }: ProductCardProps) => {
   return (
     <div className="group relative bg-card rounded-xl overflow-hidden border border-border/50 hover:border-primary/50 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-2 hover:scale-[1.02]">
       {/* Image Container */}
-      <div className="relative aspect-[4/5] overflow-hidden">
+      <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-muted/30 to-muted/10">
         {/* Shine effect overlay */}
         <div className="absolute inset-0 z-10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
         
         <img
           src={product.image}
           alt={product.name}
-          className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+          className="w-full h-full object-contain p-2 transition-transform duration-700 ease-out group-hover:scale-105"
         />
         
         {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent opacity-60 group-hover:opacity-100 transition-opacity duration-300" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent opacity-40 group-hover:opacity-80 transition-opacity duration-300" />
         
         {/* Category Badge */}
         <Badge 
