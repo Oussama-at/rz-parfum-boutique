@@ -46,8 +46,8 @@ const ProductGrid = () => {
               onClick={() => setFilter(value as typeof filter)}
               className={`transition-all duration-300 ${
                 filter === value 
-                  ? 'gradient-gold shadow-lg shadow-primary/20' 
-                  : 'hover:border-primary/50 hover:bg-primary/5'
+                  ? 'gradient-gold shadow-lg shadow-primary/20 text-foreground' 
+                  : 'hover:border-primary/50 hover:bg-primary/5 text-foreground'
               }`}
             >
               {label}
