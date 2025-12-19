@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { CartItem, Product } from '@/types/product';
-import { DELIVERY_FEE } from '@/data/products';
+import { DELIVERY_FEE, FREE_DELIVERY_THRESHOLD } from '@/data/products';
 
 interface CartContextType {
   items: CartItem[];
@@ -55,7 +55,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const getTotal = () => {
     const subtotal = getSubtotal();
-    return subtotal > 0 ? subtotal + DELIVERY_FEE : 0;
+    if (subtotal === 0) return 0;
+    return subtotal >= FREE_DELIVERY_THRESHOLD ? subtotal : subtotal + DELIVERY_FEE;
   };
 
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);

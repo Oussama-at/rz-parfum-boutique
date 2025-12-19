@@ -162,4 +162,5 @@ export const products: Product[] = [
 ];
 
 export const DELIVERY_FEE = 15;
+export const FREE_DELIVERY_THRESHOLD = 300;
 export const WHATSAPP_NUMBER = '+212600000000'; // Replace with actual number
