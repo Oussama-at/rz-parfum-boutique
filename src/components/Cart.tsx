@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Minus, Plus, Trash2, MessageCircle, Truck } from 'lucide-react';
+import { Minus, Plus, Trash2, MessageCircle, Truck, Loader2 } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { DELIVERY_FEE, FREE_DELIVERY_THRESHOLD, WHATSAPP_NUMBER } from '@/data/products';
 import { Button } from '@/components/ui/button';
@@ -8,6 +8,8 @@ import { Separator } from '@/components/ui/separator';
 import { Progress } from '@/components/ui/progress';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import {
   Select,
   SelectContent,
@@ -35,6 +37,8 @@ interface DeliveryInfo {
 
 const Cart = () => {
   const { items, updateQuantity, removeFromCart, getSubtotal, getTotal, clearCart } = useCart();
+  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<DeliveryInfo>({
     name: '',
     phone: '',
@@ -66,23 +70,66 @@ const Cart = () => {
   const isFreeDelivery = subtotal >= FREE_DELIVERY_THRESHOLD;
   const amountToFreeDelivery = FREE_DELIVERY_THRESHOLD - subtotal;
   const progressPercent = Math.min((subtotal / FREE_DELIVERY_THRESHOLD) * 100, 100);
+  const deliveryFee = isFreeDelivery ? 0 : DELIVERY_FEE;
 
   const isFormValid = formData.name.trim() && formData.phone.trim() && formData.city && formData.address.trim();
 
-  const handleWhatsAppOrder = () => {
-    if (!isFormValid) return;
+  const handleOrder = async () => {
+    if (!isFormValid || isSubmitting) return;
 
-    const orderDetails = items
-      .map(item => `• ${item.name} x${item.quantity} = ${item.price * item.quantity} DH`)
-      .join('\n');
-    
-    const deliveryText = isFreeDelivery ? 'GRATUITE 🎉' : `${DELIVERY_FEE} DH`;
-    const message = `🌹 *Nouvelle Commande R Z Parfum*\n\n📋 *Informations de livraison:*\n👤 Nom: ${formData.name.trim()}\n📞 Tél: ${formData.phone.trim()}\n🏙️ Ville: ${formData.city}\n📍 Adresse: ${formData.address.trim()}\n\n🛒 *Articles:*\n${orderDetails}\n\n📦 Sous-total: ${subtotal} DH\n🚚 Livraison: ${deliveryText}\n💰 *Total: ${getTotal()} DH*`;
-    
-    const encodedMessage = encodeURIComponent(message);
-    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER.replace('+', '')}?text=${encodedMessage}`;
-    
-    window.open(whatsappUrl, '_blank');
+    setIsSubmitting(true);
+
+    try {
+      // Save order to database
+      const orderItems = items.map(item => ({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity
+      }));
+
+      const { error } = await supabase.from('orders').insert({
+        customer_name: formData.name.trim(),
+        customer_phone: formData.phone.trim(),
+        customer_city: formData.city,
+        customer_address: formData.address.trim(),
+        items: orderItems,
+        subtotal: subtotal,
+        delivery_fee: deliveryFee,
+        total: getTotal(),
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: '✅ Commande enregistrée',
+        description: 'Vous allez être redirigé vers WhatsApp',
+      });
+
+      // Open WhatsApp
+      const orderDetails = items
+        .map(item => `• ${item.name} x${item.quantity} = ${item.price * item.quantity} DH`)
+        .join('\n');
+      
+      const deliveryText = isFreeDelivery ? 'GRATUITE 🎉' : `${DELIVERY_FEE} DH`;
+      const message = `🌹 *Nouvelle Commande R Z Parfum*\n\n📋 *Informations de livraison:*\n👤 Nom: ${formData.name.trim()}\n📞 Tél: ${formData.phone.trim()}\n🏙️ Ville: ${formData.city}\n📍 Adresse: ${formData.address.trim()}\n\n🛒 *Articles:*\n${orderDetails}\n\n📦 Sous-total: ${subtotal} DH\n🚚 Livraison: ${deliveryText}\n💰 *Total: ${getTotal()} DH*`;
+      
+      const encodedMessage = encodeURIComponent(message);
+      const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER.replace('+', '')}?text=${encodedMessage}`;
+      
+      window.open(whatsappUrl, '_blank');
+      clearCart();
+
+    } catch (error) {
+      console.error('Order error:', error);
+      toast({
+        title: 'Erreur',
+        description: 'Impossible de passer la commande. Réessayez.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (items.length === 0) {
@@ -257,11 +304,15 @@ const Cart = () => {
 
         <Button
           className="w-full mt-4 gradient-gold text-primary-foreground py-6 text-base"
-          onClick={handleWhatsAppOrder}
-          disabled={!isFormValid}
+          onClick={handleOrder}
+          disabled={!isFormValid || isSubmitting}
         >
-          <MessageCircle className="h-5 w-5 mr-2" />
-          Commander via WhatsApp
+          {isSubmitting ? (
+            <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+          ) : (
+            <MessageCircle className="h-5 w-5 mr-2" />
+          )}
+          {isSubmitting ? 'Envoi en cours...' : 'Commander via WhatsApp'}
         </Button>
         {!isFormValid && items.length > 0 && (
           <p className="text-xs text-center text-muted-foreground">
