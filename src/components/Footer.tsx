@@ -1,15 +1,27 @@
 import { MessageCircle, Instagram, Facebook } from 'lucide-react';
 import { WHATSAPP_NUMBER } from '@/data/products';
+import { useScrollReveal } from '@/hooks/useScrollReveal';
+import { cn } from '@/lib/utils';
 
 const Footer = () => {
+  const { ref, isVisible } = useScrollReveal();
+
   return (
     <footer id="contact" className="bg-noir text-white py-16">
-      <div className="container mx-auto px-4">
+      <div 
+        ref={ref}
+        className={cn(
+          "container mx-auto px-4 transition-all duration-700",
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+        )}
+      >
         <div className="grid md:grid-cols-4 gap-12">
           {/* Brand */}
           <div className="md:col-span-2">
             <div className="flex flex-col mb-6">
-              <span className="font-display text-3xl font-bold text-gradient">R&Z</span>
+              <span className="font-display text-3xl font-bold text-gradient">
+                R<span className="font-sans text-primary">&</span>Z
+              </span>
               <span className="text-xs tracking-[0.3em] text-muted-foreground uppercase">
                 Parfum
               </span>
@@ -76,7 +88,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-border/20 mt-12 pt-8 text-center text-sm text-muted-foreground">
-          <p>© 2024 R&Z Parfum. Tous droits réservés.</p>
+          <p>© 2024 R<span className="font-sans">&</span>Z Parfum. Tous droits réservés.</p>
         </div>
       </div>
     </footer>

@@ -2,9 +2,12 @@ import { useState } from 'react';
 import { products } from '@/data/products';
 import ProductCard from './ProductCard';
 import { Button } from '@/components/ui/button';
+import { useScrollReveal } from '@/hooks/useScrollReveal';
+import { cn } from '@/lib/utils';
 
 const ProductGrid = () => {
   const [filter, setFilter] = useState<'all' | 'homme' | 'femme' | 'unisex' | 'pack'>('all');
+  const { ref: headerRef, isVisible: headerVisible } = useScrollReveal();
 
   const filteredProducts = filter === 'all' 
     ? products 
@@ -19,7 +22,13 @@ const ProductGrid = () => {
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
-        <div className="text-center mb-12">
+        <div 
+          ref={headerRef}
+          className={cn(
+            "text-center mb-12 transition-all duration-700",
+            headerVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+          )}
+        >
           <span className="text-sm tracking-[0.3em] text-primary uppercase mb-3 block">
             Notre Sélection
           </span>
@@ -32,7 +41,10 @@ const ProductGrid = () => {
         </div>
 
         {/* Filters */}
-        <div className="flex justify-center gap-2 mb-12 flex-wrap">
+        <div className={cn(
+          "flex justify-center gap-2 mb-12 flex-wrap transition-all duration-700 delay-200",
+          headerVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+        )}>
           {[
             { value: 'all', label: 'Tous' },
             { value: 'homme', label: 'Homme' },
@@ -47,7 +59,7 @@ const ProductGrid = () => {
               className={`transition-all duration-300 ${
                 filter === value 
                   ? 'gradient-gold shadow-lg shadow-primary/20 text-noir' 
-                  : 'hover:border-primary/50 hover:bg-primary/5 text-foreground hover:text-noir'
+                  : 'hover:gradient-gold hover:border-transparent text-foreground hover:text-noir hover:shadow-lg hover:shadow-primary/20'
               }`}
             >
               {label}
@@ -78,7 +90,7 @@ const ProductGrid = () => {
         {/* Bottom CTA */}
         <div className="text-center mt-16">
           <p className="text-muted-foreground mb-4">Vous cherchez quelque chose de spécifique ?</p>
-          <Button variant="outline" size="lg" className="hover:gradient-gold hover:text-foreground hover:border-transparent transition-all duration-300">
+          <Button variant="outline" size="lg" className="hover:gradient-gold hover:text-noir hover:border-transparent transition-all duration-300">
             Demander un conseil
           </Button>
         </div>
