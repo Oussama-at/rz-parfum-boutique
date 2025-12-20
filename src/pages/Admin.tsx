@@ -383,7 +383,7 @@ const Admin = () => {
                       </SelectContent>
                     </Select>
                     <a
-                      href={`https://wa.me/${order.customer_phone.replace(/\s/g, '').replace('+', '')}`}
+                      href={`https://wa.me/212${order.customer_phone.replace(/\s/g, '').replace(/^0/, '')}`}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
