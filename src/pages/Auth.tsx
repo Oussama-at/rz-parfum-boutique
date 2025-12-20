@@ -43,6 +43,7 @@ export default function Auth() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [signupConfirmPassword, setSignupConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
   const { signIn, signUp, user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -198,6 +199,15 @@ export default function Auth() {
   const passwordsMatch = signupConfirmPassword.length > 0 && password === signupConfirmPassword;
   const passwordsDontMatch = signupConfirmPassword.length > 0 && password !== signupConfirmPassword;
 
+  const handleToggleMode = () => {
+    setIsAnimating(true);
+    setTimeout(() => {
+      setIsLogin(!isLogin);
+      setSignupConfirmPassword('');
+      setIsAnimating(false);
+    }, 150);
+  };
+
   // Password Reset Form (after clicking email link)
   if (isPasswordReset) {
     return (
@@ -298,19 +308,25 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md">
+      <Card className={cn(
+        "w-full max-w-md transition-all duration-300 ease-out",
+        isAnimating ? "opacity-0 scale-95" : "opacity-100 scale-100"
+      )}>
         <CardHeader className="text-center">
-          <div className="mx-auto w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+          <div className={cn(
+            "mx-auto w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4 transition-transform duration-300",
+            isAnimating ? "rotate-180 scale-75" : "rotate-0 scale-100"
+          )}>
             <Lock className="w-6 h-6 text-primary" />
           </div>
           <CardTitle className="text-2xl">Administration</CardTitle>
-          <CardDescription>
+          <CardDescription className="transition-opacity duration-200">
             {isLogin ? 'Connectez-vous pour accéder au tableau de bord' : 'Créer un nouveau compte'}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
+            <div className="space-y-2 animate-fade-in">
               <Label htmlFor="email">Email</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -325,7 +341,7 @@ export default function Auth() {
                 />
               </div>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 animate-fade-in" style={{ animationDelay: '50ms' }}>
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Mot de passe</Label>
                 {isLogin && (
@@ -350,7 +366,7 @@ export default function Auth() {
             
             {/* Confirm password for signup */}
             {!isLogin && (
-              <div className="space-y-2">
+              <div className="space-y-2 animate-fade-in" style={{ animationDelay: '100ms' }}>
                 <Label htmlFor="signup-confirm-password">Confirmer le mot de passe</Label>
                 <PasswordInput
                   id="signup-confirm-password"
@@ -360,7 +376,7 @@ export default function Auth() {
                 />
                 {signupConfirmPassword.length > 0 && (
                   <div className={cn(
-                    "flex items-center gap-2 text-sm",
+                    "flex items-center gap-2 text-sm transition-all duration-200",
                     passwordsMatch ? "text-green-600" : "text-red-500"
                   )}>
                     {passwordsMatch ? (
@@ -376,7 +392,11 @@ export default function Auth() {
               </div>
             )}
             
-            <Button type="submit" className="w-full" disabled={isLoading || (!isLogin && passwordsDontMatch)}>
+            <Button 
+              type="submit" 
+              className="w-full transition-all duration-200 hover:scale-[1.02]" 
+              disabled={isLoading || (!isLogin && passwordsDontMatch)}
+            >
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isLogin ? 'Se connecter' : 'Créer un compte'}
             </Button>
@@ -384,11 +404,8 @@ export default function Auth() {
           <div className="mt-4 text-center text-sm">
             <button
               type="button"
-              onClick={() => {
-                setIsLogin(!isLogin);
-                setSignupConfirmPassword('');
-              }}
-              className="text-primary hover:underline"
+              onClick={handleToggleMode}
+              className="text-primary hover:underline transition-colors duration-200"
             >
               {isLogin ? "Pas de compte ? S'inscrire" : 'Déjà un compte ? Se connecter'}
             </button>
