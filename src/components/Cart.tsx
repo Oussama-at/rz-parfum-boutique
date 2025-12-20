@@ -17,6 +17,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 const MOROCCAN_CITIES = [
   'Casablanca', 'Rabat', 'Marrakech', 'Fès', 'Tanger', 'Agadir', 'Meknès', 
@@ -39,6 +48,8 @@ const Cart = () => {
   const { items, updateQuantity, removeFromCart, getSubtotal, getTotal, clearCart } = useCart();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [whatsappUrl, setWhatsappUrl] = useState<string | null>(null);
+  const [isWhatsAppDialogOpen, setIsWhatsAppDialogOpen] = useState(false);
   const [formData, setFormData] = useState<DeliveryInfo>({
     name: '',
     phone: '',
@@ -115,10 +126,26 @@ const Cart = () => {
       const message = `🌹 *Nouvelle Commande R Z Parfum*\n\n📋 *Informations de livraison:*\n👤 Nom: ${formData.name.trim()}\n📞 Tél: ${formData.phone.trim()}\n🏙️ Ville: ${formData.city}\n📍 Adresse: ${formData.address.trim()}\n\n🛒 *Articles:*\n${orderDetails}\n\n📦 Sous-total: ${subtotal} DH\n🚚 Livraison: ${deliveryText}\n💰 *Total: ${getTotal()} DH*`;
 
       const encodedMessage = encodeURIComponent(message);
-      const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER.replace('+', '')}?text=${encodedMessage}`;
+      const nextWhatsappUrl = `https://wa.me/${WHATSAPP_NUMBER.replace('+', '')}?text=${encodedMessage}`;
+
+      setWhatsappUrl(nextWhatsappUrl);
+
+      const isInIframe = (() => {
+        try {
+          return window.self !== window.top;
+        } catch {
+          return true;
+        }
+      })();
+
+      // In embedded previews, wa.me can’t load inside the iframe. Show a button to open it in a new tab.
+      if (isInIframe) {
+        setIsWhatsAppDialogOpen(true);
+        return;
+      }
 
       clearCart();
-      window.location.assign(whatsappUrl);
+      window.location.assign(nextWhatsappUrl);
     } catch (error) {
       console.error('Order error:', error);
       toast({
