@@ -77,6 +77,17 @@ const Cart = () => {
   const handleOrder = async () => {
     if (!isFormValid || isSubmitting) return;
 
+    // Open a blank tab immediately to avoid popup blockers (async code can get blocked)
+    const whatsappWindow = window.open('', '_blank', 'noopener,noreferrer');
+    if (!whatsappWindow) {
+      toast({
+        title: 'Popup bloquée',
+        description: 'Autorisez les popups pour ouvrir WhatsApp et finaliser la commande.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -103,24 +114,25 @@ const Cart = () => {
 
       toast({
         title: '✅ Commande enregistrée',
-        description: 'Vous allez être redirigé vers WhatsApp',
+        description: 'WhatsApp va s’ouvrir pour envoyer votre message',
       });
 
       // Open WhatsApp
       const orderDetails = items
         .map(item => `• ${item.name} x${item.quantity} = ${item.price * item.quantity} DH`)
         .join('\n');
-      
+
       const deliveryText = isFreeDelivery ? 'GRATUITE 🎉' : `${DELIVERY_FEE} DH`;
       const message = `🌹 *Nouvelle Commande R Z Parfum*\n\n📋 *Informations de livraison:*\n👤 Nom: ${formData.name.trim()}\n📞 Tél: ${formData.phone.trim()}\n🏙️ Ville: ${formData.city}\n📍 Adresse: ${formData.address.trim()}\n\n🛒 *Articles:*\n${orderDetails}\n\n📦 Sous-total: ${subtotal} DH\n🚚 Livraison: ${deliveryText}\n💰 *Total: ${getTotal()} DH*`;
-      
+
       const encodedMessage = encodeURIComponent(message);
       const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER.replace('+', '')}?text=${encodedMessage}`;
-      
-      window.open(whatsappUrl, '_blank');
+
+      whatsappWindow.location.href = whatsappUrl;
       clearCart();
 
     } catch (error) {
+      whatsappWindow.close();
       console.error('Order error:', error);
       toast({
         title: 'Erreur',
