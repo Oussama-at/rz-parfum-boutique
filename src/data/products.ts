@@ -11,79 +11,160 @@ import bgFemme from '@/assets/bg-femme.jpg';
 import packCollection from '@/assets/pack-collection.jpg';
 
 export const products: Product[] = [
-  // HOMME
+  // HOMME - Inspirés des grandes marques
   {
     id: '1',
-    name: 'R&Z Noir Intense',
-    description: 'Un parfum mystérieux et envoûtant avec des notes profondes de oud et de vanille.',
+    name: 'Aventus',
+    description: 'Inspiré de Creed - Un parfum puissant et sophistiqué pour l\'homme audacieux.',
     price: 50,
     image: parfumHomme,
     category: 'homme',
-    notes: ['Oud', 'Vanille', 'Ambre']
+    notes: ['Ananas', 'Bouleau', 'Musc']
   },
   {
     id: '2',
-    name: 'R&Z Oud Prestige',
-    description: "L'essence même du luxe oriental avec du oud rare et précieux.",
+    name: 'Eros',
+    description: 'Inspiré de Versace - Une fragrance intense et séduisante.',
     price: 50,
     image: bgHomme,
     category: 'homme',
-    notes: ['Oud', 'Safran', 'Cuir']
+    notes: ['Menthe', 'Pomme Verte', 'Vanille']
   },
   {
     id: '3',
-    name: 'R&Z Gentleman',
-    description: 'Un parfum élégant et raffiné pour l\'homme moderne et confiant.',
+    name: 'Bleu de Chanel',
+    description: 'Inspiré de Chanel - L\'élégance masculine intemporelle.',
     price: 50,
     image: parfumGold,
     category: 'homme',
-    notes: ['Bergamote', 'Lavande', 'Musc']
+    notes: ['Citron', 'Menthe', 'Cèdre']
   },
   {
     id: '4',
-    name: 'R&Z Sport Fresh',
-    description: 'Une fragrance fraîche et dynamique pour les esprits actifs.',
+    name: 'Sauvage',
+    description: 'Inspiré de Dior - Une fragrance fraîche et magnétique.',
     price: 50,
     image: parfumCream,
     category: 'homme',
-    notes: ['Citron', 'Menthe', 'Bois de Cèdre']
+    notes: ['Bergamote', 'Poivre', 'Ambroxan']
   },
-  // FEMME
+  {
+    id: '22',
+    name: '1 Million',
+    description: 'Inspiré de Paco Rabanne - Un parfum luxueux et audacieux.',
+    price: 50,
+    image: parfumGoldSparkle,
+    category: 'homme',
+    notes: ['Cannelle', 'Cuir', 'Ambre']
+  },
+  {
+    id: '23',
+    name: 'Dior Homme',
+    description: 'Inspiré de Dior - Une signature boisée et élégante.',
+    price: 50,
+    image: parfumHomme,
+    category: 'homme',
+    notes: ['Iris', 'Cèdre', 'Vétiver']
+  },
+  {
+    id: '24',
+    name: 'Dylan Blue',
+    description: 'Inspiré de Versace - Fraîcheur méditerranéenne et sensualité.',
+    price: 50,
+    image: bgHomme,
+    category: 'homme',
+    notes: ['Bergamote', 'Pamplemousse', 'Encens']
+  },
+  {
+    id: '25',
+    name: 'Lacoste Blanc',
+    description: 'Inspiré de Lacoste - Fraîcheur pure et élégance sportive.',
+    price: 50,
+    image: parfumCream,
+    category: 'homme',
+    notes: ['Pamplemousse', 'Cèdre', 'Cuir']
+  },
+  // FEMME - Inspirés des grandes marques
   {
     id: '5',
-    name: 'R&Z Rose Élégance',
-    description: 'Une fragrance florale délicate mêlant rose de Damas et jasmin.',
+    name: 'Nuit Trésor',
+    description: 'Inspiré de Lancôme - Un parfum intense et passionné aux notes de rose et de vanille.',
     price: 50,
     image: parfumFemme,
     category: 'femme',
-    notes: ['Rose', 'Jasmin', 'Musc Blanc']
+    notes: ['Rose', 'Vanille', 'Praline']
   },
   {
     id: '6',
-    name: 'R&Z Fleur de Nuit',
-    description: "Un parfum séduisant aux accents de tubéreuse et d'ylang-ylang.",
+    name: 'Prada Essence',
+    description: 'Inspiré de Prada - Une fragrance sophistiquée aux accents floraux et poudrés.',
     price: 50,
     image: bgFemme,
     category: 'femme',
-    notes: ['Tubéreuse', 'Ylang-Ylang', 'Patchouli']
+    notes: ['Iris', 'Ambre', 'Musc']
   },
   {
     id: '7',
-    name: 'R&Z Velours Rose',
-    description: 'Un parfum romantique et sensuel aux notes de rose et de framboise.',
+    name: "J'adore",
+    description: "Inspiré de Dior - L'essence de la féminité avec des fleurs précieuses.",
     price: 50,
     image: parfumGoldSparkle,
     category: 'femme',
-    notes: ['Rose', 'Framboise', 'Vanille']
+    notes: ['Jasmin', 'Rose', 'Ylang-Ylang']
   },
   {
     id: '8',
-    name: 'R&Z Jardin Secret',
-    description: 'Une explosion florale fraîche et féminine pour les jours ensoleillés.',
+    name: 'Libre',
+    description: 'Inspiré de YSL - Une fragrance audacieuse pour la femme libre et indépendante.',
     price: 50,
     image: parfumCream,
     category: 'femme',
-    notes: ['Pivoine', 'Freesia', 'Musc']
+    notes: ['Lavande', 'Fleur d\'Oranger', 'Musc']
+  },
+  {
+    id: '17',
+    name: 'Black Opium',
+    description: 'Inspiré de YSL - Un parfum addictif aux notes de café et vanille.',
+    price: 50,
+    image: parfumGold,
+    category: 'femme',
+    notes: ['Café', 'Vanille', 'Fleur d\'Oranger']
+  },
+  {
+    id: '18',
+    name: 'La Vie est Belle',
+    description: 'Inspiré de Lancôme - Un hymne au bonheur avec iris et praline.',
+    price: 50,
+    image: parfumFemme,
+    category: 'femme',
+    notes: ['Iris', 'Praline', 'Patchouli']
+  },
+  {
+    id: '19',
+    name: 'Coco Mademoiselle',
+    description: 'Inspiré de Chanel - Une fragrance fraîche et sensuelle.',
+    price: 50,
+    image: bgFemme,
+    category: 'femme',
+    notes: ['Orange', 'Jasmin', 'Patchouli']
+  },
+  {
+    id: '20',
+    name: 'Escada Celebration',
+    description: 'Inspiré de Escada - Une explosion fruitée et joyeuse.',
+    price: 50,
+    image: parfumGoldSparkle,
+    category: 'femme',
+    notes: ['Framboise', 'Rose', 'Musc']
+  },
+  {
+    id: '21',
+    name: 'Kayali Vanilla',
+    description: 'Inspiré de Kayali - Une vanille gourmande et envoûtante.',
+    price: 50,
+    image: parfumCream,
+    category: 'femme',
+    notes: ['Vanille', 'Caramel', 'Santal']
   },
   // UNISEX
   {
