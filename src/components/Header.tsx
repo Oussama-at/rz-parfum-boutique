@@ -1,11 +1,20 @@
-import { ShoppingBag } from 'lucide-react';
+import { useState } from 'react';
+import { ShoppingBag, Menu, X } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import Cart from './Cart';
+import { cn } from '@/lib/utils';
 
 const Header = () => {
   const { itemCount } = useCart();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const navLinks = [
+    { href: '#collection', label: 'Collection' },
+    { href: '#about', label: 'À Propos' },
+    { href: '#contact', label: 'Contact' },
+  ];
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 glass-effect border-b border-border/50">
@@ -19,33 +28,67 @@ const Header = () => {
           </span>
         </a>
 
+        {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-8">
-          <a href="#collection" className="text-sm tracking-wide hover:text-primary transition-colors">
-            Collection
-          </a>
-          <a href="#about" className="text-sm tracking-wide hover:text-primary transition-colors">
-            À Propos
-          </a>
-          <a href="#contact" className="text-sm tracking-wide hover:text-primary transition-colors">
-            Contact
-          </a>
+          {navLinks.map((link) => (
+            <a 
+              key={link.href}
+              href={link.href} 
+              className="text-sm tracking-wide hover:text-primary transition-colors"
+            >
+              {link.label}
+            </a>
+          ))}
         </nav>
 
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="relative">
-              <ShoppingBag className="h-5 w-5" />
-              {itemCount > 0 && (
-                <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center font-medium">
-                  {itemCount}
-                </span>
-              )}
-            </Button>
-          </SheetTrigger>
-          <SheetContent className="w-full sm:max-w-lg">
-            <Cart />
-          </SheetContent>
-        </Sheet>
+        <div className="flex items-center gap-2">
+          {/* Mobile Menu Toggle */}
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="md:hidden"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </Button>
+
+          {/* Cart */}
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="relative">
+                <ShoppingBag className="h-5 w-5" />
+                {itemCount > 0 && (
+                  <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center font-medium">
+                    {itemCount}
+                  </span>
+                )}
+              </Button>
+            </SheetTrigger>
+            <SheetContent className="w-full sm:max-w-lg">
+              <Cart />
+            </SheetContent>
+          </Sheet>
+        </div>
+      </div>
+
+      {/* Mobile Navigation Menu */}
+      <div className={cn(
+        "md:hidden overflow-hidden transition-all duration-300 ease-out",
+        mobileMenuOpen ? "max-h-64 opacity-100" : "max-h-0 opacity-0"
+      )}>
+        <nav className="container mx-auto px-4 py-4 flex flex-col gap-4 border-t border-border/50">
+          {navLinks.map((link, index) => (
+            <a 
+              key={link.href}
+              href={link.href} 
+              className="text-sm tracking-wide hover:text-primary transition-colors py-2 animate-fade-in"
+              style={{ animationDelay: `${index * 0.1}s` }}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              {link.label}
+            </a>
+          ))}
+        </nav>
       </div>
     </header>
   );

@@ -1,9 +1,23 @@
+import { useScrollReveal } from '@/hooks/useScrollReveal';
+import { cn } from '@/lib/utils';
+
 const About = () => {
+  const { ref: sectionRef, isVisible } = useScrollReveal();
+
   return (
     <section id="about" className="py-24 bg-muted/30">
-      <div className="container mx-auto px-4">
+      <div 
+        ref={sectionRef}
+        className={cn(
+          "container mx-auto px-4 transition-all duration-700",
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+        )}
+      >
         <div className="grid md:grid-cols-2 gap-12 items-center">
-          <div className="relative">
+          <div className={cn(
+            "relative transition-all duration-700 delay-200",
+            isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-10"
+          )}>
             <div className="aspect-square rounded-2xl overflow-hidden">
               <img
                 src="https://images.unsplash.com/photo-1615634260167-c8cdede054de?w=600&h=600&fit=crop"
@@ -15,7 +29,10 @@ const About = () => {
             <div className="absolute -top-6 -left-6 w-32 h-32 bg-gold-light/20 rounded-full -z-10" />
           </div>
 
-          <div>
+          <div className={cn(
+            "transition-all duration-700 delay-300",
+            isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-10"
+          )}>
             <span className="text-sm tracking-[0.3em] text-primary uppercase mb-3 block">
               Notre Histoire
             </span>
