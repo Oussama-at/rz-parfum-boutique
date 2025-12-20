@@ -6,13 +6,24 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Lock, Mail, KeyRound } from 'lucide-react';
+import { Loader2, Lock, Mail, KeyRound, Check, X } from 'lucide-react';
 import { z } from 'zod';
 import { supabase } from '@/integrations/supabase/client';
-import { PasswordInput } from '@/components/PasswordInput';
+import { PasswordInput, checkPasswordCriteria } from '@/components/PasswordInput';
+import { cn } from '@/lib/utils';
+
 const authSchema = z.object({
   email: z.string().email('Email invalide'),
   password: z.string().min(6, 'Le mot de passe doit contenir au moins 6 caractères'),
+});
+
+const signupSchema = z.object({
+  email: z.string().email('Email invalide'),
+  password: z.string().min(6, 'Le mot de passe doit contenir au moins 6 caractères'),
+  confirmPassword: z.string().min(6, 'Le mot de passe doit contenir au moins 6 caractères'),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: 'Les mots de passe ne correspondent pas',
+  path: ['confirmPassword'],
 });
 
 const passwordSchema = z.object({
@@ -30,6 +41,7 @@ export default function Auth() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [signupConfirmPassword, setSignupConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { signIn, signUp, user } = useAuth();
   const navigate = useNavigate();
@@ -91,14 +103,26 @@ export default function Auth() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const validation = authSchema.safeParse({ email, password });
-    if (!validation.success) {
-      toast({
-        title: 'Erreur de validation',
-        description: validation.error.errors[0].message,
-        variant: 'destructive',
-      });
-      return;
+    if (isLogin) {
+      const validation = authSchema.safeParse({ email, password });
+      if (!validation.success) {
+        toast({
+          title: 'Erreur de validation',
+          description: validation.error.errors[0].message,
+          variant: 'destructive',
+        });
+        return;
+      }
+    } else {
+      const validation = signupSchema.safeParse({ email, password, confirmPassword: signupConfirmPassword });
+      if (!validation.success) {
+        toast({
+          title: 'Erreur de validation',
+          description: validation.error.errors[0].message,
+          variant: 'destructive',
+        });
+        return;
+      }
     }
 
     setIsLoading(true);
@@ -171,6 +195,9 @@ export default function Auth() {
     }
   };
 
+  const passwordsMatch = signupConfirmPassword.length > 0 && password === signupConfirmPassword;
+  const passwordsDontMatch = signupConfirmPassword.length > 0 && password !== signupConfirmPassword;
+
   // Password Reset Form (after clicking email link)
   if (isPasswordReset) {
     return (
@@ -194,6 +221,7 @@ export default function Auth() {
                   value={password}
                   onChange={setPassword}
                   showCriteria={true}
+                  showStrength={true}
                   required
                 />
               </div>
@@ -315,10 +343,40 @@ export default function Auth() {
                 value={password}
                 onChange={setPassword}
                 showCriteria={!isLogin}
+                showStrength={!isLogin}
                 required
               />
             </div>
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            
+            {/* Confirm password for signup */}
+            {!isLogin && (
+              <div className="space-y-2">
+                <Label htmlFor="signup-confirm-password">Confirmer le mot de passe</Label>
+                <PasswordInput
+                  id="signup-confirm-password"
+                  value={signupConfirmPassword}
+                  onChange={setSignupConfirmPassword}
+                  required
+                />
+                {signupConfirmPassword.length > 0 && (
+                  <div className={cn(
+                    "flex items-center gap-2 text-sm",
+                    passwordsMatch ? "text-green-600" : "text-red-500"
+                  )}>
+                    {passwordsMatch ? (
+                      <Check className="w-4 h-4" />
+                    ) : (
+                      <X className="w-4 h-4" />
+                    )}
+                    <span>
+                      {passwordsMatch ? "Les mots de passe correspondent" : "Les mots de passe ne correspondent pas"}
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
+            
+            <Button type="submit" className="w-full" disabled={isLoading || (!isLogin && passwordsDontMatch)}>
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isLogin ? 'Se connecter' : 'Créer un compte'}
             </Button>
@@ -326,7 +384,10 @@ export default function Auth() {
           <div className="mt-4 text-center text-sm">
             <button
               type="button"
-              onClick={() => setIsLogin(!isLogin)}
+              onClick={() => {
+                setIsLogin(!isLogin);
+                setSignupConfirmPassword('');
+              }}
               className="text-primary hover:underline"
             >
               {isLogin ? "Pas de compte ? S'inscrire" : 'Déjà un compte ? Se connecter'}

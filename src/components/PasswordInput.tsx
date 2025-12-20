@@ -17,6 +17,7 @@ interface PasswordInputProps {
   onChange: (value: string) => void;
   placeholder?: string;
   showCriteria?: boolean;
+  showStrength?: boolean;
   required?: boolean;
   className?: string;
 }
@@ -28,6 +29,19 @@ const checkPasswordCriteria = (password: string): PasswordCriteria => ({
   hasNumber: /[0-9]/.test(password),
   hasSpecial: /[!@#$%^&*(),.?":{}|<>]/.test(password),
 });
+
+const getPasswordStrength = (criteria: PasswordCriteria): { level: 'weak' | 'medium' | 'strong'; score: number } => {
+  const score = Object.values(criteria).filter(Boolean).length;
+  if (score <= 2) return { level: 'weak', score };
+  if (score <= 4) return { level: 'medium', score };
+  return { level: 'strong', score };
+};
+
+const strengthConfig = {
+  weak: { label: 'Faible', color: 'bg-red-500', width: 'w-1/3' },
+  medium: { label: 'Moyen', color: 'bg-yellow-500', width: 'w-2/3' },
+  strong: { label: 'Fort', color: 'bg-green-500', width: 'w-full' },
+};
 
 const CriteriaItem = ({ met, label }: { met: boolean; label: string }) => (
   <div className={cn(
@@ -49,11 +63,14 @@ export function PasswordInput({
   onChange,
   placeholder = "••••••••",
   showCriteria = false,
+  showStrength = false,
   required = false,
   className,
 }: PasswordInputProps) {
   const [showPassword, setShowPassword] = useState(false);
   const criteria = checkPasswordCriteria(value);
+  const strength = getPasswordStrength(criteria);
+  const config = strengthConfig[strength.level];
 
   return (
     <div className="space-y-2">
@@ -81,6 +98,25 @@ export function PasswordInput({
           )}
         </button>
       </div>
+
+      {/* Strength indicator bar */}
+      {showStrength && value.length > 0 && (
+        <div className="space-y-1">
+          <div className="h-2 bg-muted rounded-full overflow-hidden">
+            <div
+              className={cn("h-full transition-all duration-300", config.color, config.width)}
+            />
+          </div>
+          <p className={cn(
+            "text-xs font-medium",
+            strength.level === 'weak' && "text-red-500",
+            strength.level === 'medium' && "text-yellow-600",
+            strength.level === 'strong' && "text-green-600"
+          )}>
+            Force : {config.label}
+          </p>
+        </div>
+      )}
       
       {showCriteria && value.length > 0 && (
         <div className="grid grid-cols-2 gap-1 p-3 bg-muted/50 rounded-md">
@@ -94,3 +130,5 @@ export function PasswordInput({
     </div>
   );
 }
+
+export { checkPasswordCriteria };
