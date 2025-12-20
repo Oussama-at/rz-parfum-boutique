@@ -77,17 +77,6 @@ const Cart = () => {
   const handleOrder = async () => {
     if (!isFormValid || isSubmitting) return;
 
-    // Open a blank tab immediately to avoid popup blockers (async code can get blocked)
-    const whatsappWindow = window.open('', '_blank', 'noopener,noreferrer');
-    if (!whatsappWindow) {
-      toast({
-        title: 'Popup bloquée',
-        description: 'Autorisez les popups pour ouvrir WhatsApp et finaliser la commande.',
-        variant: 'destructive',
-      });
-      return;
-    }
-
     setIsSubmitting(true);
 
     try {
@@ -96,7 +85,7 @@ const Cart = () => {
         id: item.id,
         name: item.name,
         price: item.price,
-        quantity: item.quantity
+        quantity: item.quantity,
       }));
 
       const { error } = await supabase.from('orders').insert({
@@ -114,10 +103,10 @@ const Cart = () => {
 
       toast({
         title: '✅ Commande enregistrée',
-        description: 'WhatsApp va s’ouvrir pour envoyer votre message',
+        description: 'Ouverture de WhatsApp…',
       });
 
-      // Open WhatsApp
+      // Open WhatsApp (no popup => avoids popup blockers)
       const orderDetails = items
         .map(item => `• ${item.name} x${item.quantity} = ${item.price * item.quantity} DH`)
         .join('\n');
@@ -128,11 +117,9 @@ const Cart = () => {
       const encodedMessage = encodeURIComponent(message);
       const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER.replace('+', '')}?text=${encodedMessage}`;
 
-      whatsappWindow.location.href = whatsappUrl;
       clearCart();
-
+      window.location.assign(whatsappUrl);
     } catch (error) {
-      whatsappWindow.close();
       console.error('Order error:', error);
       toast({
         title: 'Erreur',
