@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Minus, Plus, Trash2, MessageCircle, Truck, Loader2 } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { Minus, Plus, Trash2, MessageCircle, Truck, Loader2, Copy, ExternalLink } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { DELIVERY_FEE, FREE_DELIVERY_THRESHOLD, WHATSAPP_NUMBER } from '@/data/products';
 import { Button } from '@/components/ui/button';
@@ -84,6 +84,33 @@ const Cart = () => {
   const deliveryFee = isFreeDelivery ? 0 : DELIVERY_FEE;
 
   const isFormValid = formData.name.trim() && formData.phone.trim() && formData.city && formData.address.trim();
+
+  // Build WhatsApp message text (used for copy)
+  const buildWhatsappMessage = useCallback(() => {
+    const orderDetails = items
+      .map(item => `• ${item.name} x${item.quantity} = ${item.price * item.quantity} DH`)
+      .join('\n');
+    const deliveryText = isFreeDelivery ? 'GRATUITE 🎉' : `${DELIVERY_FEE} DH`;
+    return `🌹 *Nouvelle Commande R Z Parfum*\n\n📋 *Informations de livraison:*\n👤 Nom: ${formData.name.trim()}\n📞 Tél: ${formData.phone.trim()}\n🏙️ Ville: ${formData.city}\n📍 Adresse: ${formData.address.trim()}\n\n🛒 *Articles:*\n${orderDetails}\n\n📦 Sous-total: ${subtotal} DH\n🚚 Livraison: ${deliveryText}\n💰 *Total: ${getTotal()} DH*`;
+  }, [items, formData, subtotal, isFreeDelivery, getTotal]);
+
+  const handleCopyMessage = async () => {
+    const message = buildWhatsappMessage();
+    try {
+      await navigator.clipboard.writeText(message);
+      toast({ title: '✅ Message copié', description: 'Collez-le dans WhatsApp' });
+    } catch {
+      toast({ title: 'Erreur', description: 'Impossible de copier', variant: 'destructive' });
+    }
+  };
+
+  const handleOpenWhatsApp = () => {
+    if (whatsappUrl) {
+      window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+      clearCart();
+      setIsWhatsAppDialogOpen(false);
+    }
+  };
 
   const handleOrder = async () => {
     if (!isFormValid || isSubmitting) return;
@@ -354,6 +381,29 @@ const Cart = () => {
           Vider le panier
         </Button>
       </div>
+
+      {/* WhatsApp Fallback Dialog (for iframe/preview) */}
+      <AlertDialog open={isWhatsAppDialogOpen} onOpenChange={setIsWhatsAppDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Commande enregistrée ✅</AlertDialogTitle>
+            <AlertDialogDescription>
+              WhatsApp ne peut pas s'ouvrir dans cette fenêtre. Utilisez un des boutons ci-dessous pour finaliser votre commande.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-col gap-2 sm:flex-col">
+            <Button onClick={handleOpenWhatsApp} className="w-full gradient-gold text-primary-foreground">
+              <ExternalLink className="h-4 w-4 mr-2" />
+              Ouvrir WhatsApp
+            </Button>
+            <Button variant="outline" onClick={handleCopyMessage} className="w-full">
+              <Copy className="h-4 w-4 mr-2" />
+              Copier le message
+            </Button>
+            <AlertDialogCancel className="w-full mt-2">Fermer</AlertDialogCancel>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
