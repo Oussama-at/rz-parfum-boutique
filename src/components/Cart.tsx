@@ -99,8 +99,9 @@ const Cart = () => {
     const phoneDigits = WHATSAPP_NUMBER.replace(/\D/g, '');
     const encodedMessage = encodeURIComponent(buildWhatsappMessage());
 
-    // Try app/deeplink first (works best on mobile + WhatsApp Desktop if installed)
+    // Prefer native app / desktop app if available, then fall back to browser endpoints.
     const protocolUrl = `whatsapp://send?phone=${phoneDigits}&text=${encodedMessage}`;
+    const apiUrl = `https://api.whatsapp.com/send?phone=${phoneDigits}&text=${encodedMessage}`;
     const waMeUrl = `https://wa.me/${phoneDigits}?text=${encodedMessage}`;
     const webUrl = `https://web.whatsapp.com/send?phone=${phoneDigits}&text=${encodedMessage}`;
 
@@ -112,7 +113,7 @@ const Cart = () => {
       }
     };
 
-    const opened = tryOpen(protocolUrl) || tryOpen(waMeUrl) || tryOpen(webUrl);
+    const opened = tryOpen(protocolUrl) || tryOpen(apiUrl) || tryOpen(waMeUrl) || tryOpen(webUrl);
 
     if (!opened) {
       toast({
@@ -170,12 +171,8 @@ const Cart = () => {
       const encodedMessage = encodeURIComponent(message);
       const phoneDigits = WHATSAPP_NUMBER.replace(/\D/g, '');
 
-      // WhatsApp sometimes redirects to api.whatsapp.com which can be blocked in some environments.
-      // Use web.whatsapp.com on desktop to avoid that, and wa.me on mobile.
-      const isMobile = /Android|iPhone|iPad|iPod|Mobi/i.test(navigator.userAgent);
-      const nextWhatsappUrl = isMobile
-        ? `https://wa.me/${phoneDigits}?text=${encodedMessage}`
-        : `https://web.whatsapp.com/send?phone=${phoneDigits}&text=${encodedMessage}`;
+      // Some environments block web.whatsapp.com/wa.me. api.whatsapp.com often works better in browsers.
+      const nextWhatsappUrl = `https://api.whatsapp.com/send?phone=${phoneDigits}&text=${encodedMessage}`;
 
       setWhatsappUrl(nextWhatsappUrl);
 
