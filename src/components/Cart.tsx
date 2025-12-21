@@ -96,11 +96,35 @@ const Cart = () => {
 
 
   const handleOpenWhatsApp = () => {
-    if (whatsappUrl) {
-      window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
-      clearCart();
-      setIsWhatsAppDialogOpen(false);
+    const phoneDigits = WHATSAPP_NUMBER.replace(/\D/g, '');
+    const encodedMessage = encodeURIComponent(buildWhatsappMessage());
+
+    // Try app/deeplink first (works best on mobile + WhatsApp Desktop if installed)
+    const protocolUrl = `whatsapp://send?phone=${phoneDigits}&text=${encodedMessage}`;
+    const waMeUrl = `https://wa.me/${phoneDigits}?text=${encodedMessage}`;
+    const webUrl = `https://web.whatsapp.com/send?phone=${phoneDigits}&text=${encodedMessage}`;
+
+    const tryOpen = (url: string) => {
+      try {
+        return window.open(url, '_blank', 'noopener,noreferrer');
+      } catch {
+        return null;
+      }
+    };
+
+    const opened = tryOpen(protocolUrl) || tryOpen(waMeUrl) || tryOpen(webUrl);
+
+    if (!opened) {
+      toast({
+        title: 'Blocage du navigateur',
+        description: "Autorisez les popups ou essayez un autre navigateur/réseau.",
+        variant: 'destructive',
+      });
+      return;
     }
+
+    clearCart();
+    setIsWhatsAppDialogOpen(false);
   };
 
   const handleOrder = async () => {
