@@ -144,7 +144,7 @@ const Cart = () => {
         description: 'Ouverture de WhatsApp…',
       });
 
-      // Open WhatsApp (no popup => avoids popup blockers)
+      // Build WhatsApp URL
       const orderDetails = items
         .map(item => `• ${item.name} x${item.quantity} = ${item.price * item.quantity} DH`)
         .join('\n');
@@ -157,22 +157,9 @@ const Cart = () => {
 
       setWhatsappUrl(nextWhatsappUrl);
 
-      const isInIframe = (() => {
-        try {
-          return window.self !== window.top;
-        } catch {
-          return true;
-        }
-      })();
-
-      // In embedded previews, wa.me can’t load inside the iframe. Show a button to open it in a new tab.
-      if (isInIframe) {
-        setIsWhatsAppDialogOpen(true);
-        return;
-      }
-
-      clearCart();
-      window.location.assign(nextWhatsappUrl);
+      // Always show dialog with option to open WhatsApp - more reliable than direct navigation
+      // This avoids issues with iframe blocking and popup blockers
+      setIsWhatsAppDialogOpen(true);
     } catch (error) {
       console.error('Order error:', error);
       toast({
