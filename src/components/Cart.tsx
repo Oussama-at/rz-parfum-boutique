@@ -48,6 +48,7 @@ const Cart = () => {
   const { items, updateQuantity, removeFromCart, getSubtotal, getTotal, clearCart } = useCart();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isOpeningWhatsApp, setIsOpeningWhatsApp] = useState(false);
   const [whatsappUrl, setWhatsappUrl] = useState<string | null>(null);
   const [isWhatsAppDialogOpen, setIsWhatsAppDialogOpen] = useState(false);
   const [formData, setFormData] = useState<DeliveryInfo>({
@@ -96,24 +97,22 @@ const Cart = () => {
 
 
   const handleOpenWhatsApp = () => {
+    if (isOpeningWhatsApp) return;
+
+    setIsOpeningWhatsApp(true);
+
     const phoneDigits = WHATSAPP_NUMBER.replace(/\D/g, '');
     const encodedMessage = encodeURIComponent(buildWhatsappMessage());
 
-    // Prefer native app / desktop app if available, then fall back to browser endpoints.
-    const protocolUrl = `whatsapp://send?phone=${phoneDigits}&text=${encodedMessage}`;
-    const apiUrl = `https://api.whatsapp.com/send?phone=${phoneDigits}&text=${encodedMessage}`;
-    const waMeUrl = `https://wa.me/${phoneDigits}?text=${encodedMessage}`;
-    const webUrl = `https://web.whatsapp.com/send?phone=${phoneDigits}&text=${encodedMessage}`;
+    // Open only ONE page to avoid multiple tabs/windows.
+    const url = `https://api.whatsapp.com/send?phone=${phoneDigits}&text=${encodedMessage}`;
 
-    const tryOpen = (url: string) => {
-      try {
-        return window.open(url, '_blank', 'noopener,noreferrer');
-      } catch {
-        return null;
-      }
-    };
-
-    const opened = tryOpen(protocolUrl) || tryOpen(apiUrl) || tryOpen(waMeUrl) || tryOpen(webUrl);
+    let opened: Window | null = null;
+    try {
+      opened = window.open(url, '_blank', 'noopener,noreferrer');
+    } catch {
+      opened = null;
+    }
 
     if (!opened) {
       toast({
@@ -121,11 +120,15 @@ const Cart = () => {
         description: "Autorisez les popups ou essayez un autre navigateur/réseau.",
         variant: 'destructive',
       });
+      setIsOpeningWhatsApp(false);
       return;
     }
 
     clearCart();
     setIsWhatsAppDialogOpen(false);
+
+    // Re-enable the button shortly after to prevent double-click spam.
+    window.setTimeout(() => setIsOpeningWhatsApp(false), 1500);
   };
 
   const handleOrder = async () => {
@@ -397,9 +400,13 @@ const Cart = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="flex-col gap-2 sm:flex-col">
-            <Button onClick={handleOpenWhatsApp} className="w-full gradient-gold text-primary-foreground">
+            <Button
+              onClick={handleOpenWhatsApp}
+              disabled={isOpeningWhatsApp}
+              className="w-full gradient-gold text-primary-foreground"
+            >
               <ExternalLink className="h-4 w-4 mr-2" />
-              Ouvrir WhatsApp
+              {isOpeningWhatsApp ? 'Ouverture…' : 'Ouvrir WhatsApp'}
             </Button>
             <AlertDialogCancel className="w-full mt-2">Fermer</AlertDialogCancel>
           </AlertDialogFooter>
