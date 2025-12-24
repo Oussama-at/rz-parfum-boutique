@@ -9,6 +9,13 @@ import parfumFemme from '@/assets/parfum-femme.jpg';
 import bgHomme from '@/assets/bg-homme.jpg';
 import bgFemme from '@/assets/bg-femme.jpg';
 import packCollection from '@/assets/pack-collection.jpg';
+import catalogueNew from '@/assets/catalogue-new.jpg';
+import flaconFemme from '@/assets/flacon-femme.png';
+import flaconHomme from '@/assets/flacon-homme.png';
+import packHomme5 from '@/assets/pack-homme-5.png';
+import packFemme3 from '@/assets/pack-femme-3.png';
+import packHommeNoel from '@/assets/pack-homme-noel.png';
+import packFemmeNoel from '@/assets/pack-femme-noel.png';
 
 export const products: Product[] = [
   // HOMME - Inspirés des grandes marques
@@ -17,7 +24,7 @@ export const products: Product[] = [
     name: 'Aventus',
     description: 'Inspiré de Creed - Un parfum puissant et sophistiqué pour l\'homme audacieux.',
     price: 50,
-    image: parfumHomme,
+    image: flaconHomme,
     category: 'homme',
     notes: ['Ananas', 'Bouleau', 'Musc']
   },
@@ -26,7 +33,7 @@ export const products: Product[] = [
     name: 'Eros',
     description: 'Inspiré de Versace - Une fragrance intense et séduisante.',
     price: 50,
-    image: bgHomme,
+    image: flaconHomme,
     category: 'homme',
     notes: ['Menthe', 'Pomme Verte', 'Vanille']
   },
@@ -35,7 +42,7 @@ export const products: Product[] = [
     name: 'Bleu de Chanel',
     description: 'Inspiré de Chanel - L\'élégance masculine intemporelle.',
     price: 50,
-    image: parfumGold,
+    image: flaconHomme,
     category: 'homme',
     notes: ['Citron', 'Menthe', 'Cèdre']
   },
@@ -44,7 +51,7 @@ export const products: Product[] = [
     name: 'Sauvage',
     description: 'Inspiré de Dior - Une fragrance fraîche et magnétique.',
     price: 50,
-    image: parfumCream,
+    image: flaconHomme,
     category: 'homme',
     notes: ['Bergamote', 'Poivre', 'Ambroxan']
   },
@@ -53,7 +60,7 @@ export const products: Product[] = [
     name: '1 Million',
     description: 'Inspiré de Paco Rabanne - Un parfum luxueux et audacieux.',
     price: 50,
-    image: parfumGoldSparkle,
+    image: flaconHomme,
     category: 'homme',
     notes: ['Cannelle', 'Cuir', 'Ambre']
   },
@@ -62,7 +69,7 @@ export const products: Product[] = [
     name: 'Dior Homme',
     description: 'Inspiré de Dior - Une signature boisée et élégante.',
     price: 50,
-    image: parfumHomme,
+    image: flaconHomme,
     category: 'homme',
     notes: ['Iris', 'Cèdre', 'Vétiver']
   },
@@ -71,7 +78,7 @@ export const products: Product[] = [
     name: 'Dylan Blue',
     description: 'Inspiré de Versace - Fraîcheur méditerranéenne et sensualité.',
     price: 50,
-    image: bgHomme,
+    image: flaconHomme,
     category: 'homme',
     notes: ['Bergamote', 'Pamplemousse', 'Encens']
   },
@@ -80,7 +87,7 @@ export const products: Product[] = [
     name: 'Lacoste Blanc',
     description: 'Inspiré de Lacoste - Fraîcheur pure et élégance sportive.',
     price: 50,
-    image: parfumCream,
+    image: flaconHomme,
     category: 'homme',
     notes: ['Pamplemousse', 'Cèdre', 'Cuir']
   },
@@ -90,7 +97,7 @@ export const products: Product[] = [
     name: 'Nuit Trésor',
     description: 'Inspiré de Lancôme - Un parfum intense et passionné aux notes de rose et de vanille.',
     price: 50,
-    image: parfumFemme,
+    image: flaconFemme,
     category: 'femme',
     notes: ['Rose', 'Vanille', 'Praline']
   },
@@ -99,7 +106,7 @@ export const products: Product[] = [
     name: 'Prada Essence',
     description: 'Inspiré de Prada - Une fragrance sophistiquée aux accents floraux et poudrés.',
     price: 50,
-    image: bgFemme,
+    image: flaconFemme,
     category: 'femme',
     notes: ['Iris', 'Ambre', 'Musc']
   },
@@ -108,7 +115,7 @@ export const products: Product[] = [
     name: "J'adore",
     description: "Inspiré de Dior - L'essence de la féminité avec des fleurs précieuses.",
     price: 50,
-    image: parfumGoldSparkle,
+    image: flaconFemme,
     category: 'femme',
     notes: ['Jasmin', 'Rose', 'Ylang-Ylang']
   },
@@ -117,7 +124,7 @@ export const products: Product[] = [
     name: 'Libre',
     description: 'Inspiré de YSL - Une fragrance audacieuse pour la femme libre et indépendante.',
     price: 50,
-    image: parfumCream,
+    image: flaconFemme,
     category: 'femme',
     notes: ['Lavande', 'Fleur d\'Oranger', 'Musc']
   },
@@ -162,7 +169,7 @@ export const products: Product[] = [
     name: 'Kayali Vanilla',
     description: 'Inspiré de Kayali - Une vanille gourmande et envoûtante.',
     price: 50,
-    image: parfumCream,
+    image: flaconFemme,
     category: 'femme',
     notes: ['Vanille', 'Caramel', 'Santal']
   },
@@ -203,13 +210,13 @@ export const products: Product[] = [
     category: 'unisex',
     notes: ['Cuir', 'Cardamome', 'Oud']
   },
-  // PACKS
+  // PACKS - Updated with new images
   {
     id: '13',
     name: 'Pack Trio Découverte',
     description: '3 parfums au choix pour découvrir notre collection à prix réduit.',
     price: 130,
-    image: packCollection,
+    image: packFemme3,
     category: 'pack',
     notes: ['3 Parfums', 'Au Choix', 'Économie 20 DH']
   },
@@ -218,30 +225,33 @@ export const products: Product[] = [
     name: 'Pack Prestige',
     description: '4 parfums premium pour une collection complète à prix exceptionnel.',
     price: 160,
-    image: packCollection,
+    image: packFemmeNoel,
     category: 'pack',
     notes: ['4 Parfums', 'Au Choix', 'Économie 40 DH']
   },
   {
     id: '15',
-    name: 'Pack Couple',
-    description: 'Un duo parfait avec 1 parfum homme et 1 parfum femme au choix.',
-    price: 90,
-    image: parfumGoldSparkle,
+    name: 'Pack Homme 5',
+    description: '5 parfums homme pour une collection masculine complète.',
+    price: 200,
+    image: packHomme5,
     category: 'pack',
-    notes: ['2 Parfums', 'Homme + Femme', 'Économie 10 DH']
+    notes: ['5 Parfums', 'Homme', 'Économie 50 DH']
   },
   {
     id: '16',
     name: 'Pack Collection Complète',
-    description: '6 parfums pour avoir toute notre gamme à un prix imbattable.',
-    price: 250,
-    image: packCollection,
+    description: '5 parfums pour avoir toute notre gamme à un prix imbattable.',
+    price: 200,
+    image: packHommeNoel,
     category: 'pack',
-    notes: ['6 Parfums', 'Au Choix', 'Économie 50 DH']
+    notes: ['5 Parfums', 'Au Choix', 'Économie 50 DH']
   }
 ];
 
 export const DELIVERY_FEE = 15;
 export const FREE_DELIVERY_THRESHOLD = 300;
 export const WHATSAPP_NUMBER = '+212641973545';
+
+// Export catalogue image for use in other components
+export { catalogueNew };
