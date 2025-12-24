@@ -210,28 +210,30 @@ export const products: Product[] = [
     category: 'unisex',
     notes: ['Cuir', 'Cardamome', 'Oud']
   },
-  // PACKS - Updated with new images
+  // PACKS - Updated with new images and names
   {
     id: '13',
-    name: 'Pack Trio Découverte',
+    name: 'Pack Christmas',
     description: '3 parfums au choix pour découvrir notre collection à prix réduit.',
     price: 130,
     image: packFemme3,
     category: 'pack',
-    notes: ['3 Parfums', 'Au Choix', 'Économie 20 DH']
+    notes: ['3 Parfums', 'Au Choix', 'Économie 20 DH'],
+    badge: 'newyear'
   },
   {
     id: '14',
-    name: 'Pack Prestige',
+    name: 'Pack Couple',
     description: '4 parfums premium pour une collection complète à prix exceptionnel.',
     price: 160,
     image: packFemmeNoel,
     category: 'pack',
-    notes: ['4 Parfums', 'Au Choix', 'Économie 40 DH']
+    notes: ['4 Parfums', 'Au Choix', 'Économie 40 DH'],
+    badge: 'flower'
   },
   {
     id: '15',
-    name: 'Pack Homme 5',
+    name: 'Pack Offre Homme',
     description: '5 parfums homme pour une collection masculine complète.',
     price: 200,
     image: packHomme5,

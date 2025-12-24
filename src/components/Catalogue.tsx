@@ -1,4 +1,4 @@
-import catalogueImage from '@/assets/catalogue.jpg';
+import catalogueNew from '@/assets/catalogue-new.jpg';
 
 const Catalogue = () => {
   return (
@@ -20,7 +20,7 @@ const Catalogue = () => {
         {/* Catalogue Image */}
         <div className="relative rounded-2xl overflow-hidden shadow-2xl max-w-5xl mx-auto">
           <img 
-            src={catalogueImage} 
+            src={catalogueNew} 
             alt="Catalogue R&Z Parfum - Collection Femmes et Hommes"
             className="w-full h-auto object-cover"
           />
