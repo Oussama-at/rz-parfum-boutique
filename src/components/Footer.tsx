@@ -1,4 +1,5 @@
 import { MessageCircle, Instagram, Facebook } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { WHATSAPP_NUMBER } from '@/data/products';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
 import { cn } from '@/lib/utils';
@@ -61,6 +62,11 @@ const Footer = () => {
               <li>
                 <a href="#collection" className="text-muted-foreground hover:text-primary transition-colors">
                   Collection
+                </a>
+              </li>
+              <li>
+                <a href="/catalogue" className="text-muted-foreground hover:text-primary transition-colors">
+                  Catalogue
                 </a>
               </li>
               <li>
