@@ -1,4 +1,5 @@
 import { Plus, Flower2, Sparkles } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Product } from '@/types/product';
 import { useCart } from '@/contexts/CartContext';
 import { Button } from '@/components/ui/button';
@@ -49,16 +50,18 @@ const ProductCard = ({ product }: ProductCardProps) => {
           {categoryLabels[product.category]}
         </Badge>
 
-        {/* Special Badge for packs */}
+        {/* Special Badge for packs with animations */}
         {product.badge === 'flower' && (
-          <div className="absolute top-4 right-4 w-10 h-10 rounded-full bg-pink-500/90 backdrop-blur-md flex items-center justify-center animate-pulse">
-            <Flower2 className="h-5 w-5 text-white" />
+          <div className="absolute top-4 right-4 w-12 h-12 rounded-full bg-gradient-to-br from-pink-500 via-rose-400 to-pink-600 backdrop-blur-md flex items-center justify-center animate-badge-flower shadow-lg shadow-pink-500/40">
+            <Flower2 className="h-6 w-6 text-white drop-shadow-md" />
+            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-white/40 to-transparent animate-badge-shine" />
           </div>
         )}
         {product.badge === 'newyear' && (
-          <div className="absolute top-4 right-4 px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-500 to-yellow-400 backdrop-blur-md flex items-center gap-1.5">
-            <Sparkles className="h-4 w-4 text-white" />
-            <span className="text-xs font-bold text-white">2025</span>
+          <div className="absolute top-4 right-4 px-4 py-2 rounded-full bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 backdrop-blur-md flex items-center gap-2 animate-badge-glow shadow-lg shadow-amber-500/40 overflow-hidden">
+            <Sparkles className="h-5 w-5 text-white animate-spin-slow drop-shadow-md" />
+            <span className="text-sm font-bold text-white drop-shadow-md">2025</span>
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-badge-shine" />
           </div>
         )}
 
@@ -76,9 +79,11 @@ const ProductCard = ({ product }: ProductCardProps) => {
 
       {/* Content */}
       <div className="p-5 transition-transform duration-300 group-hover:-translate-y-1">
-        <h3 className="font-display text-lg font-semibold mb-2 transition-colors duration-300 group-hover:text-primary">
-          {product.name}
-        </h3>
+        <Link to={`/product/${product.id}`}>
+          <h3 className="font-display text-lg font-semibold mb-2 transition-colors duration-300 group-hover:text-primary hover:underline cursor-pointer">
+            {product.name}
+          </h3>
+        </Link>
         <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
           {product.description}
         </p>
