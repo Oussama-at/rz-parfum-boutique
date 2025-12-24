@@ -1,4 +1,4 @@
-import { Plus } from 'lucide-react';
+import { Plus, Flower2, Sparkles } from 'lucide-react';
 import { Product } from '@/types/product';
 import { useCart } from '@/contexts/CartContext';
 import { Button } from '@/components/ui/button';
@@ -48,6 +48,19 @@ const ProductCard = ({ product }: ProductCardProps) => {
         >
           {categoryLabels[product.category]}
         </Badge>
+
+        {/* Special Badge for packs */}
+        {product.badge === 'flower' && (
+          <div className="absolute top-4 right-4 w-10 h-10 rounded-full bg-pink-500/90 backdrop-blur-md flex items-center justify-center animate-pulse">
+            <Flower2 className="h-5 w-5 text-white" />
+          </div>
+        )}
+        {product.badge === 'newyear' && (
+          <div className="absolute top-4 right-4 px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-500 to-yellow-400 backdrop-blur-md flex items-center gap-1.5">
+            <Sparkles className="h-4 w-4 text-white" />
+            <span className="text-xs font-bold text-white">2025</span>
+          </div>
+        )}
 
         {/* Quick Add Button */}
         <div className="absolute bottom-4 left-4 right-4 opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">

@@ -6,6 +6,7 @@ export interface Product {
   image: string;
   category: 'homme' | 'femme' | 'unisex' | 'pack';
   notes: string[];
+  badge?: 'flower' | 'newyear';
 }
 
 export interface CartItem extends Product {
