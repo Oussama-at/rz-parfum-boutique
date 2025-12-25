@@ -1,10 +1,12 @@
-import { Plus, Flower2, Sparkles } from 'lucide-react';
+import { Plus, Flower2, Sparkles, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Product } from '@/types/product';
 import { useCart } from '@/contexts/CartContext';
+import { useWishlist } from '@/contexts/WishlistContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 
 interface ProductCardProps {
   product: Product;
@@ -13,10 +15,24 @@ interface ProductCardProps {
 
 const ProductCard = ({ product }: ProductCardProps) => {
   const { addToCart } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const inWishlist = isInWishlist(product.id);
 
   const handleAddToCart = () => {
     addToCart(product);
     toast.success(`${product.name} ajouté au panier`);
+  };
+
+  const handleWishlistToggle = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (inWishlist) {
+      removeFromWishlist(product.id);
+      toast.success(`${product.name} retiré des favoris`);
+    } else {
+      addToWishlist(product);
+      toast.success(`${product.name} ajouté aux favoris`);
+    }
   };
 
   const categoryLabels: Record<string, string> = {
@@ -50,15 +66,28 @@ const ProductCard = ({ product }: ProductCardProps) => {
           {categoryLabels[product.category]}
         </Badge>
 
+        {/* Wishlist Button */}
+        <button
+          onClick={handleWishlistToggle}
+          className={cn(
+            "absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 z-20",
+            inWishlist 
+              ? "bg-red-500 text-white shadow-lg shadow-red-500/40" 
+              : "bg-background/90 backdrop-blur-md text-muted-foreground hover:bg-red-500 hover:text-white"
+          )}
+        >
+          <Heart className={cn("h-5 w-5", inWishlist && "fill-current")} />
+        </button>
+
         {/* Special Badge for packs with animations */}
         {product.badge === 'flower' && (
-          <div className="absolute top-4 right-4 w-12 h-12 rounded-full bg-gradient-to-br from-pink-500 via-rose-400 to-pink-600 backdrop-blur-md flex items-center justify-center animate-badge-flower shadow-lg shadow-pink-500/40">
+          <div className="absolute top-16 right-4 w-12 h-12 rounded-full bg-gradient-to-br from-pink-500 via-rose-400 to-pink-600 backdrop-blur-md flex items-center justify-center animate-badge-flower shadow-lg shadow-pink-500/40">
             <Flower2 className="h-6 w-6 text-white drop-shadow-md" />
             <div className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-white/40 to-transparent animate-badge-shine" />
           </div>
         )}
         {product.badge === 'newyear' && (
-          <div className="absolute top-4 right-4 px-4 py-2 rounded-full bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 backdrop-blur-md flex items-center gap-2 animate-badge-glow shadow-lg shadow-amber-500/40 overflow-hidden">
+          <div className="absolute top-16 right-4 px-4 py-2 rounded-full bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 backdrop-blur-md flex items-center gap-2 animate-badge-glow shadow-lg shadow-amber-500/40 overflow-hidden">
             <Sparkles className="h-5 w-5 text-white animate-spin-slow drop-shadow-md" />
             <span className="text-sm font-bold text-white drop-shadow-md">2025</span>
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-badge-shine" />
