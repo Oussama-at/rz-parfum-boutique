@@ -1,19 +1,27 @@
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Plus, Sparkles, Flower2, ShoppingBag } from 'lucide-react';
+import { ArrowLeft, Sparkles, Flower2, ShoppingBag, Heart } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { products } from '@/data/products';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useCart } from '@/contexts/CartContext';
+import { useWishlist } from '@/contexts/WishlistContext';
 import { toast } from 'sonner';
 import ProductCard from '@/components/ProductCard';
+import ImageGallery from '@/components/ImageGallery';
+import { cn } from '@/lib/utils';
 
 const ProductPage = () => {
   const { id } = useParams();
   const { addToCart } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   
   const product = products.find(p => p.id === id);
+  const inWishlist = product ? isInWishlist(product.id) : false;
+  
+  // Create gallery images array - use product.images if available, otherwise use main image
+  const galleryImages = product?.images?.length ? product.images : product ? [product.image] : [];
   
   if (!product) {
     return (
@@ -37,6 +45,16 @@ const ProductPage = () => {
   const handleAddToCart = () => {
     addToCart(product);
     toast.success(`${product.name} ajouté au panier`);
+  };
+
+  const handleWishlistToggle = () => {
+    if (inWishlist) {
+      removeFromWishlist(product.id);
+      toast.success(`${product.name} retiré des favoris`);
+    } else {
+      addToWishlist(product);
+      toast.success(`${product.name} ajouté aux favoris`);
+    }
   };
 
   const categoryLabels: Record<string, string> = {
@@ -74,38 +92,32 @@ const ProductPage = () => {
 
           {/* Product Details */}
           <div className="grid lg:grid-cols-2 gap-12 mb-20">
-            {/* Product Image */}
+            {/* Product Image Gallery */}
             <div className="relative">
-              <div className="aspect-square rounded-2xl overflow-hidden bg-gradient-to-br from-muted/30 to-muted/10 border border-border/50 relative group">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-full object-contain p-8 transition-transform duration-700 group-hover:scale-105"
-                />
-                
-                {/* Badge */}
-                {product.badge === 'flower' && (
-                  <div className="absolute top-6 right-6 w-16 h-16 rounded-full bg-gradient-to-br from-pink-500 via-rose-400 to-pink-600 flex items-center justify-center animate-badge-flower shadow-xl shadow-pink-500/40">
-                    <Flower2 className="h-8 w-8 text-white" />
-                    <div className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-white/40 to-transparent animate-badge-shine" />
-                  </div>
-                )}
-                {product.badge === 'newyear' && (
-                  <div className="absolute top-6 right-6 px-5 py-3 rounded-full bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 flex items-center gap-2 animate-badge-glow shadow-xl shadow-amber-500/40 overflow-hidden">
-                    <Sparkles className="h-6 w-6 text-white animate-spin-slow" />
-                    <span className="text-base font-bold text-white">2025</span>
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-badge-shine" />
-                  </div>
-                )}
-                
-                {/* Category Badge */}
-                <Badge 
-                  variant="secondary" 
-                  className="absolute top-6 left-6 bg-background/90 backdrop-blur-md border border-primary/20"
-                >
-                  {categoryLabels[product.category]}
-                </Badge>
-              </div>
+              <ImageGallery images={galleryImages} productName={product.name} />
+              
+              {/* Badge overlays */}
+              {product.badge === 'flower' && (
+                <div className="absolute top-6 right-6 w-16 h-16 rounded-full bg-gradient-to-br from-pink-500 via-rose-400 to-pink-600 flex items-center justify-center animate-badge-flower shadow-xl shadow-pink-500/40 z-10">
+                  <Flower2 className="h-8 w-8 text-white" />
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-white/40 to-transparent animate-badge-shine" />
+                </div>
+              )}
+              {product.badge === 'newyear' && (
+                <div className="absolute top-6 right-6 px-5 py-3 rounded-full bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 flex items-center gap-2 animate-badge-glow shadow-xl shadow-amber-500/40 overflow-hidden z-10">
+                  <Sparkles className="h-6 w-6 text-white animate-spin-slow" />
+                  <span className="text-base font-bold text-white">2025</span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-badge-shine" />
+                </div>
+              )}
+              
+              {/* Category Badge */}
+              <Badge 
+                variant="secondary" 
+                className="absolute top-6 left-6 bg-background/90 backdrop-blur-md border border-primary/20 z-10"
+              >
+                {categoryLabels[product.category]}
+              </Badge>
             </div>
 
             {/* Product Info */}
@@ -145,7 +157,7 @@ const ProductPage = () => {
                 <span className="text-lg text-muted-foreground">DH</span>
               </div>
 
-              {/* Add to Cart */}
+              {/* Add to Cart & Wishlist */}
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button
                   onClick={handleAddToCart}
@@ -155,10 +167,21 @@ const ProductPage = () => {
                   <ShoppingBag className="h-5 w-5 mr-2" />
                   Ajouter au panier
                 </Button>
+                <Button
+                  onClick={handleWishlistToggle}
+                  variant="outline"
+                  size="lg"
+                  className={cn(
+                    "h-14 px-6",
+                    inWishlist && "border-red-500 text-red-500 hover:bg-red-500/10"
+                  )}
+                >
+                  <Heart className={cn("h-5 w-5", inWishlist && "fill-current")} />
+                </Button>
                 <Link to="/#collection">
                   <Button variant="outline" size="lg" className="h-14">
                     <ArrowLeft className="h-5 w-5 mr-2" />
-                    Voir la collection
+                    Collection
                   </Button>
                 </Link>
               </div>

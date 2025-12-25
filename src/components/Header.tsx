@@ -1,6 +1,8 @@
 import { useState } from 'react';
-import { ShoppingBag, Menu, X } from 'lucide-react';
+import { ShoppingBag, Menu, X, Heart } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useCart } from '@/contexts/CartContext';
+import { useWishlist } from '@/contexts/WishlistContext';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import Cart from './Cart';
@@ -8,6 +10,7 @@ import { cn } from '@/lib/utils';
 
 const Header = () => {
   const { itemCount } = useCart();
+  const { itemCount: wishlistCount } = useWishlist();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navLinks = [
@@ -53,6 +56,18 @@ const Header = () => {
             {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
 
+          {/* Wishlist */}
+          <Link to="/wishlist">
+            <Button variant="ghost" size="icon" className="relative">
+              <Heart className="h-5 w-5" />
+              {wishlistCount > 0 && (
+                <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center font-medium">
+                  {wishlistCount}
+                </span>
+              )}
+            </Button>
+          </Link>
+
           {/* Cart */}
           <Sheet>
             <SheetTrigger asChild>
@@ -89,6 +104,14 @@ const Header = () => {
               {link.label}
             </a>
           ))}
+          <Link 
+            to="/wishlist"
+            className="text-sm tracking-wide hover:text-primary transition-colors py-2 animate-fade-in flex items-center gap-2"
+            style={{ animationDelay: `${navLinks.length * 0.1}s` }}
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            <Heart className="h-4 w-4" /> Favoris
+          </Link>
         </nav>
       </div>
     </header>

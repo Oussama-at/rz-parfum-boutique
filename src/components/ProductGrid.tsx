@@ -1,17 +1,51 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { products } from '@/data/products';
 import ProductCard from './ProductCard';
+import ProductFilters, { FilterState } from './ProductFilters';
 import { Button } from '@/components/ui/button';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
 import { cn } from '@/lib/utils';
 
 const ProductGrid = () => {
-  const [filter, setFilter] = useState<'all' | 'homme' | 'femme' | 'unisex' | 'pack'>('all');
   const { ref: headerRef, isVisible: headerVisible } = useScrollReveal();
+  
+  // Calculate max price and available notes
+  const maxPrice = useMemo(() => Math.max(...products.map(p => p.price)), []);
+  const availableNotes = useMemo(() => {
+    const notesSet = new Set<string>();
+    products.forEach(p => p.notes.forEach(n => notesSet.add(n)));
+    return Array.from(notesSet).sort();
+  }, []);
 
-  const filteredProducts = filter === 'all' 
-    ? products 
-    : products.filter(p => p.category === filter);
+  const [filters, setFilters] = useState<FilterState>({
+    category: 'all',
+    priceRange: [0, maxPrice],
+    notes: []
+  });
+
+  const filteredProducts = useMemo(() => {
+    return products.filter(product => {
+      // Category filter
+      if (filters.category !== 'all' && product.category !== filters.category) {
+        return false;
+      }
+      
+      // Price range filter
+      if (product.price < filters.priceRange[0] || product.price > filters.priceRange[1]) {
+        return false;
+      }
+      
+      // Notes filter - product must have at least one of the selected notes
+      if (filters.notes.length > 0) {
+        const hasMatchingNote = product.notes.some(note => filters.notes.includes(note));
+        if (!hasMatchingNote) {
+          return false;
+        }
+      }
+      
+      return true;
+    });
+  }, [filters]);
 
   return (
     <section id="collection" className="py-24 bg-background relative overflow-hidden">
@@ -40,51 +74,61 @@ const ProductGrid = () => {
           </p>
         </div>
 
-        {/* Filters */}
-        <div className={cn(
-          "flex justify-center gap-2 mb-12 flex-wrap transition-all duration-700 delay-200",
-          headerVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-        )}>
-          {[
-            { value: 'all', label: 'Tous' },
-            { value: 'homme', label: 'Homme' },
-            { value: 'femme', label: 'Femme' },
-            { value: 'unisex', label: 'Unisex' },
-            { value: 'pack', label: 'Pack' }
-          ].map(({ value, label }) => (
-            <Button
-              key={value}
-              variant={filter === value ? 'default' : 'outline'}
-              onClick={() => setFilter(value as typeof filter)}
-              className={`transition-all duration-300 ${
-                filter === value 
-                  ? 'gradient-gold shadow-lg shadow-primary/20 text-noir' 
-                  : 'hover:gradient-gold hover:border-transparent text-foreground hover:text-noir hover:shadow-lg hover:shadow-primary/20'
-              }`}
-            >
-              {label}
-            </Button>
-          ))}
-        </div>
-
-        {/* Product count */}
-        <div className="text-center mb-8">
-          <span className="text-sm text-muted-foreground">
-            {filteredProducts.length} parfum{filteredProducts.length > 1 ? 's' : ''}
-          </span>
-        </div>
-
-        {/* Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
-          {filteredProducts.map((product, index) => (
-            <div 
-              key={product.id}
-              className="animate-fade-in"
-              style={{ animationDelay: `${index * 0.08}s` }}
-            >
-              <ProductCard product={product} index={index} />
+        <div className="grid lg:grid-cols-[280px_1fr] gap-8">
+          {/* Filters Sidebar */}
+          <aside className={cn(
+            "transition-all duration-700 delay-100",
+            headerVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+          )}>
+            <div className="lg:sticky lg:top-24 bg-card/50 backdrop-blur-sm rounded-xl p-6 border border-border/50">
+              <h3 className="font-display text-lg font-semibold mb-4 hidden lg:block">Filtres</h3>
+              <ProductFilters 
+                filters={filters} 
+                onFiltersChange={setFilters}
+                availableNotes={availableNotes}
+                maxPrice={maxPrice}
+              />
             </div>
-          ))}
+          </aside>
+
+          {/* Products Grid */}
+          <div>
+            {/* Product count */}
+            <div className="flex items-center justify-between mb-6">
+              <span className="text-sm text-muted-foreground">
+                {filteredProducts.length} parfum{filteredProducts.length > 1 ? 's' : ''}
+              </span>
+            </div>
+
+            {/* Grid */}
+            {filteredProducts.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-8">
+                {filteredProducts.map((product, index) => (
+                  <div 
+                    key={product.id}
+                    className="animate-fade-in"
+                    style={{ animationDelay: `${index * 0.08}s` }}
+                  >
+                    <ProductCard product={product} index={index} />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-16">
+                <p className="text-muted-foreground mb-4">Aucun parfum ne correspond à vos critères.</p>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setFilters({
+                    category: 'all',
+                    priceRange: [0, maxPrice],
+                    notes: []
+                  })}
+                >
+                  Réinitialiser les filtres
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Bottom CTA */}
