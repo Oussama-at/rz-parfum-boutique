@@ -1,10 +1,11 @@
 import { useState, useMemo } from 'react';
 import { products } from '@/data/products';
 import ProductCard from './ProductCard';
-import ProductFilters, { FilterState } from './ProductFilters';
+import ProductFilters, { FilterState, SortOption } from './ProductFilters';
 import { Button } from '@/components/ui/button';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
 import { cn } from '@/lib/utils';
+import { Product } from '@/types/product';
 
 const ProductGrid = () => {
   const { ref: headerRef, isVisible: headerVisible } = useScrollReveal();
@@ -20,11 +21,49 @@ const ProductGrid = () => {
   const [filters, setFilters] = useState<FilterState>({
     category: 'all',
     priceRange: [0, maxPrice],
-    notes: []
+    notes: [],
+    searchQuery: '',
+    sortBy: 'default'
   });
 
+  // Sort function
+  const sortProducts = (productsToSort: Product[], sortBy: SortOption): Product[] => {
+    const sorted = [...productsToSort];
+    switch (sortBy) {
+      case 'price-asc':
+        return sorted.sort((a, b) => a.price - b.price);
+      case 'price-desc':
+        return sorted.sort((a, b) => b.price - a.price);
+      case 'name-asc':
+        return sorted.sort((a, b) => a.name.localeCompare(b.name, 'fr'));
+      case 'name-desc':
+        return sorted.sort((a, b) => b.name.localeCompare(a.name, 'fr'));
+      case 'popular':
+        // Sort by category popularity: packs first, then homme, femme, unisex
+        const categoryOrder = ['pack', 'homme', 'femme', 'unisex'];
+        return sorted.sort((a, b) => {
+          const aIndex = categoryOrder.indexOf(a.category);
+          const bIndex = categoryOrder.indexOf(b.category);
+          return aIndex - bIndex;
+        });
+      default:
+        return sorted;
+    }
+  };
+
   const filteredProducts = useMemo(() => {
-    return products.filter(product => {
+    let result = products.filter(product => {
+      // Search filter
+      if (filters.searchQuery.trim()) {
+        const query = filters.searchQuery.toLowerCase().trim();
+        const matchesName = product.name.toLowerCase().includes(query);
+        const matchesDescription = product.description?.toLowerCase().includes(query);
+        const matchesNotes = product.notes.some(note => note.toLowerCase().includes(query));
+        if (!matchesName && !matchesDescription && !matchesNotes) {
+          return false;
+        }
+      }
+
       // Category filter
       if (filters.category !== 'all' && product.category !== filters.category) {
         return false;
@@ -45,6 +84,9 @@ const ProductGrid = () => {
       
       return true;
     });
+
+    // Apply sorting
+    return sortProducts(result, filters.sortBy);
   }, [filters]);
 
   return (
@@ -121,7 +163,9 @@ const ProductGrid = () => {
                   onClick={() => setFilters({
                     category: 'all',
                     priceRange: [0, maxPrice],
-                    notes: []
+                    notes: [],
+                    searchQuery: '',
+                    sortBy: 'default'
                   })}
                 >
                   Réinitialiser les filtres

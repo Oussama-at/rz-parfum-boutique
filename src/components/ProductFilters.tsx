@@ -2,14 +2,20 @@ import { useState } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { SlidersHorizontal, X } from 'lucide-react';
+import { SlidersHorizontal, X, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
+
+export type SortOption = 'default' | 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc' | 'popular';
 
 export interface FilterState {
   category: string;
   priceRange: [number, number];
   notes: string[];
+  searchQuery: string;
+  sortBy: SortOption;
 }
 
 interface ProductFiltersProps {
@@ -45,21 +51,71 @@ const ProductFilters = ({ filters, onFiltersChange, availableNotes, maxPrice }: 
     onFiltersChange({ ...filters, notes: newNotes });
   };
 
+  const handleSearchChange = (value: string) => {
+    onFiltersChange({ ...filters, searchQuery: value });
+  };
+
+  const handleSortChange = (value: SortOption) => {
+    onFiltersChange({ ...filters, sortBy: value });
+  };
+
   const clearFilters = () => {
     onFiltersChange({
       category: 'all',
       priceRange: [0, maxPrice],
-      notes: []
+      notes: [],
+      searchQuery: '',
+      sortBy: 'default'
     });
   };
 
   const hasActiveFilters = filters.category !== 'all' || 
     filters.priceRange[0] > 0 || 
     filters.priceRange[1] < maxPrice || 
-    filters.notes.length > 0;
+    filters.notes.length > 0 ||
+    filters.searchQuery.length > 0 ||
+    filters.sortBy !== 'default';
+
+  const sortOptions = [
+    { value: 'default', label: 'Par défaut' },
+    { value: 'price-asc', label: 'Prix croissant' },
+    { value: 'price-desc', label: 'Prix décroissant' },
+    { value: 'name-asc', label: 'Nom A-Z' },
+    { value: 'name-desc', label: 'Nom Z-A' },
+    { value: 'popular', label: 'Popularité' }
+  ];
 
   const FiltersContent = () => (
     <div className="space-y-6">
+      {/* Search Bar */}
+      <div>
+        <h3 className="font-display text-sm font-semibold mb-3 text-foreground">Recherche</h3>
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Rechercher un parfum..."
+            value={filters.searchQuery}
+            onChange={(e) => handleSearchChange(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+      </div>
+
+      {/* Sort Options */}
+      <div>
+        <h3 className="font-display text-sm font-semibold mb-3 text-foreground">Trier par</h3>
+        <Select value={filters.sortBy} onValueChange={(value) => handleSortChange(value as SortOption)}>
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Par défaut" />
+          </SelectTrigger>
+          <SelectContent>
+            {sortOptions.map(({ value, label }) => (
+              <SelectItem key={value} value={value}>{label}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
       {/* Category Filter */}
       <div>
         <h3 className="font-display text-sm font-semibold mb-3 text-foreground">Catégorie</h3>
