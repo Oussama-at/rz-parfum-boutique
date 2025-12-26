@@ -17,6 +17,20 @@ import packFemme3 from '@/assets/pack-femme-3.png';
 import packHommeNoel from '@/assets/pack-homme-noel.png';
 import packFemmeNoel from '@/assets/pack-femme-noel.png';
 
+// New homme perfume images
+import hommeCreedAventus from '@/assets/homme-creed-aventus.png';
+import hommeErosVersace from '@/assets/homme-eros-versace.png';
+import hommeLacoste from '@/assets/homme-lacoste.png';
+import hommeOneMillion from '@/assets/homme-one-million.png';
+import hommeDiorSauvage from '@/assets/homme-dior-sauvage.png';
+import hommeBleuDeChanel from '@/assets/homme-bleu-de-chanel.png';
+import hommePacoRabanneInvictus from '@/assets/homme-paco-rabanne-invictus.png';
+
+// New femme perfume images
+import femmeNuitTresor from '@/assets/femme-nuit-tresor.png';
+import femmePradaEssence from '@/assets/femme-prada-essence.png';
+import femmeJadore from '@/assets/femme-jadore.png';
+
 export const products: Product[] = [
   // HOMME - Inspirés des grandes marques
   {
@@ -24,7 +38,7 @@ export const products: Product[] = [
     name: 'Aventus',
     description: 'Inspiré de Creed - Un parfum puissant et sophistiqué pour l\'homme audacieux.',
     price: 50,
-    image: flaconHomme,
+    image: hommeCreedAventus,
     category: 'homme',
     notes: ['Ananas', 'Bouleau', 'Musc']
   },
@@ -33,7 +47,7 @@ export const products: Product[] = [
     name: 'Eros',
     description: 'Inspiré de Versace - Une fragrance intense et séduisante.',
     price: 50,
-    image: flaconHomme,
+    image: hommeErosVersace,
     category: 'homme',
     notes: ['Menthe', 'Pomme Verte', 'Vanille']
   },
@@ -42,7 +56,7 @@ export const products: Product[] = [
     name: 'Bleu de Chanel',
     description: 'Inspiré de Chanel - L\'élégance masculine intemporelle.',
     price: 50,
-    image: flaconHomme,
+    image: hommeBleuDeChanel,
     category: 'homme',
     notes: ['Citron', 'Menthe', 'Cèdre']
   },
@@ -51,7 +65,7 @@ export const products: Product[] = [
     name: 'Sauvage',
     description: 'Inspiré de Dior - Une fragrance fraîche et magnétique.',
     price: 50,
-    image: flaconHomme,
+    image: hommeDiorSauvage,
     category: 'homme',
     notes: ['Bergamote', 'Poivre', 'Ambroxan']
   },
@@ -60,18 +74,18 @@ export const products: Product[] = [
     name: '1 Million',
     description: 'Inspiré de Paco Rabanne - Un parfum luxueux et audacieux.',
     price: 50,
-    image: flaconHomme,
+    image: hommeOneMillion,
     category: 'homme',
     notes: ['Cannelle', 'Cuir', 'Ambre']
   },
   {
     id: '23',
-    name: 'Dior Homme',
-    description: 'Inspiré de Dior - Une signature boisée et élégante.',
+    name: 'Invictus',
+    description: 'Inspiré de Paco Rabanne - Un parfum frais et conquérant.',
     price: 50,
-    image: flaconHomme,
+    image: hommePacoRabanneInvictus,
     category: 'homme',
-    notes: ['Iris', 'Cèdre', 'Vétiver']
+    notes: ['Laurier', 'Ambre Gris', 'Bois de Gaïac']
   },
   {
     id: '24',
@@ -87,7 +101,7 @@ export const products: Product[] = [
     name: 'Lacoste Blanc',
     description: 'Inspiré de Lacoste - Fraîcheur pure et élégance sportive.',
     price: 50,
-    image: flaconHomme,
+    image: hommeLacoste,
     category: 'homme',
     notes: ['Pamplemousse', 'Cèdre', 'Cuir']
   },
@@ -97,7 +111,7 @@ export const products: Product[] = [
     name: 'Nuit Trésor',
     description: 'Inspiré de Lancôme - Un parfum intense et passionné aux notes de rose et de vanille.',
     price: 50,
-    image: flaconFemme,
+    image: femmeNuitTresor,
     category: 'femme',
     notes: ['Rose', 'Vanille', 'Praline']
   },
@@ -106,7 +120,7 @@ export const products: Product[] = [
     name: 'Prada Essence',
     description: 'Inspiré de Prada - Une fragrance sophistiquée aux accents floraux et poudrés.',
     price: 50,
-    image: flaconFemme,
+    image: femmePradaEssence,
     category: 'femme',
     notes: ['Iris', 'Ambre', 'Musc']
   },
@@ -115,7 +129,7 @@ export const products: Product[] = [
     name: "J'adore",
     description: "Inspiré de Dior - L'essence de la féminité avec des fleurs précieuses.",
     price: 50,
-    image: flaconFemme,
+    image: femmeJadore,
     category: 'femme',
     notes: ['Jasmin', 'Rose', 'Ylang-Ylang']
   },
