@@ -125,6 +125,9 @@ const Cart = () => {
     }
 
     clearCart();
+    // Clear form after successful order
+    setFormData({ name: '', phone: '', city: '', address: '' });
+    localStorage.removeItem(STORAGE_KEY);
     setIsWhatsAppDialogOpen(false);
 
     // Re-enable the button shortly after to prevent double-click spam.

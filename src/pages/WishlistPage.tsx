@@ -76,6 +76,16 @@ const WishlistPage = () => {
                   </div>
                 ))}
               </div>
+
+              {/* Discover Collection Button at the bottom */}
+              <div className="text-center mt-12">
+                <Link to="/#collection">
+                  <Button variant="outline" className="border-primary/30 hover:bg-primary/10">
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Découvrir la collection
+                  </Button>
+                </Link>
+              </div>
             </>
           ) : (
             <div className="text-center py-16">
