@@ -10,6 +10,7 @@ import { useWishlist } from '@/contexts/WishlistContext';
 import { toast } from 'sonner';
 import ProductCard from '@/components/ProductCard';
 import ImageGallery from '@/components/ImageGallery';
+import ProductReviews from '@/components/ProductReviews';
 import { cn } from '@/lib/utils';
 
 const ProductPage = () => {
@@ -210,9 +211,12 @@ const ProductPage = () => {
             </div>
           </div>
 
+          {/* Reviews Section */}
+          <ProductReviews productId={product.id} />
+
           {/* Related Products */}
           {relatedProducts.length > 0 && (
-            <section>
+            <section className="mt-16">
               <h2 className="font-display text-3xl font-bold mb-8 text-center">
                 Produits similaires
               </h2>

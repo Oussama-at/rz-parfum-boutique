@@ -1,8 +1,9 @@
-import { Plus, Flower2, Sparkles, Heart } from 'lucide-react';
+import { Plus, Flower2, Sparkles, Heart, GitCompare } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Product } from '@/types/product';
 import { useCart } from '@/contexts/CartContext';
 import { useWishlist } from '@/contexts/WishlistContext';
+import { useComparison } from '@/contexts/ComparisonContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
@@ -16,7 +17,9 @@ interface ProductCardProps {
 const ProductCard = ({ product }: ProductCardProps) => {
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { addToComparison, removeFromComparison, isInComparison, canAdd } = useComparison();
   const inWishlist = isInWishlist(product.id);
+  const inComparison = isInComparison(product.id);
 
   const handleAddToCart = () => {
     addToCart(product);
@@ -32,6 +35,21 @@ const ProductCard = ({ product }: ProductCardProps) => {
     } else {
       addToWishlist(product);
       toast.success(`${product.name} ajouté aux favoris`);
+    }
+  };
+
+  const handleComparisonToggle = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (inComparison) {
+      removeFromComparison(product.id);
+      toast.success(`${product.name} retiré de la comparaison`);
+    } else {
+      if (addToComparison(product)) {
+        toast.success(`${product.name} ajouté à la comparaison`);
+      } else {
+        toast.error('Maximum 3 produits dans la comparaison');
+      }
     }
   };
 
@@ -77,6 +95,21 @@ const ProductCard = ({ product }: ProductCardProps) => {
           )}
         >
           <Heart className={cn("h-5 w-5", inWishlist && "fill-current")} />
+        </button>
+
+        {/* Comparison Button */}
+        <button
+          onClick={handleComparisonToggle}
+          className={cn(
+            "absolute top-16 right-4 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 z-20",
+            inComparison 
+              ? "bg-blue-500 text-white shadow-lg shadow-blue-500/40" 
+              : "bg-background/90 backdrop-blur-md text-muted-foreground hover:bg-blue-500 hover:text-white",
+            !canAdd && !inComparison && "opacity-50 cursor-not-allowed"
+          )}
+          disabled={!canAdd && !inComparison}
+        >
+          <GitCompare className="h-5 w-5" />
         </button>
 
         {/* Special Badge for packs with animations */}

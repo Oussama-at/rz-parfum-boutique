@@ -28,8 +28,14 @@ import hommePacoRabanneInvictus from '@/assets/homme-paco-rabanne-invictus.png';
 
 // New femme perfume images
 import femmeNuitTresor from '@/assets/femme-nuit-tresor.png';
-import femmePradaEssence from '@/assets/femme-prada-essence.png';
+import femmePrada from '@/assets/femme-prada.png';
 import femmeJadore from '@/assets/femme-jadore.png';
+import femmeBlackOpium from '@/assets/femme-black-opium.png';
+import femmeLaVieEstBelle from '@/assets/femme-la-vie-est-belle.png';
+import femmeCocoMademoiselle from '@/assets/femme-coco-mademoiselle.png';
+import femmeEscada from '@/assets/femme-escada.png';
+import femmeKayali from '@/assets/femme-kayali.png';
+import femmeLibre from '@/assets/femme-libre.png';
 
 export const products: Product[] = [
   // HOMME - Inspirés des grandes marques
@@ -117,10 +123,10 @@ export const products: Product[] = [
   },
   {
     id: '6',
-    name: 'Prada Essence',
+    name: 'Prada Candy',
     description: 'Inspiré de Prada - Une fragrance sophistiquée aux accents floraux et poudrés.',
     price: 50,
-    image: femmePradaEssence,
+    image: femmePrada,
     category: 'femme',
     notes: ['Iris', 'Ambre', 'Musc']
   },
@@ -138,7 +144,7 @@ export const products: Product[] = [
     name: 'Libre',
     description: 'Inspiré de YSL - Une fragrance audacieuse pour la femme libre et indépendante.',
     price: 50,
-    image: flaconFemme,
+    image: femmeLibre,
     category: 'femme',
     notes: ['Lavande', 'Fleur d\'Oranger', 'Musc']
   },
@@ -147,7 +153,7 @@ export const products: Product[] = [
     name: 'Black Opium',
     description: 'Inspiré de YSL - Un parfum addictif aux notes de café et vanille.',
     price: 50,
-    image: parfumGold,
+    image: femmeBlackOpium,
     category: 'femme',
     notes: ['Café', 'Vanille', 'Fleur d\'Oranger']
   },
@@ -156,7 +162,7 @@ export const products: Product[] = [
     name: 'La Vie est Belle',
     description: 'Inspiré de Lancôme - Un hymne au bonheur avec iris et praline.',
     price: 50,
-    image: parfumFemme,
+    image: femmeLaVieEstBelle,
     category: 'femme',
     notes: ['Iris', 'Praline', 'Patchouli']
   },
@@ -165,7 +171,7 @@ export const products: Product[] = [
     name: 'Coco Mademoiselle',
     description: 'Inspiré de Chanel - Une fragrance fraîche et sensuelle.',
     price: 50,
-    image: bgFemme,
+    image: femmeCocoMademoiselle,
     category: 'femme',
     notes: ['Orange', 'Jasmin', 'Patchouli']
   },
@@ -174,7 +180,7 @@ export const products: Product[] = [
     name: 'Escada Celebration',
     description: 'Inspiré de Escada - Une explosion fruitée et joyeuse.',
     price: 50,
-    image: parfumGoldSparkle,
+    image: femmeEscada,
     category: 'femme',
     notes: ['Framboise', 'Rose', 'Musc']
   },
@@ -183,7 +189,7 @@ export const products: Product[] = [
     name: 'Kayali Vanilla',
     description: 'Inspiré de Kayali - Une vanille gourmande et envoûtante.',
     price: 50,
-    image: flaconFemme,
+    image: femmeKayali,
     category: 'femme',
     notes: ['Vanille', 'Caramel', 'Santal']
   },
